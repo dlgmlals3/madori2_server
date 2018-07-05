@@ -1,0 +1,10 @@
+
+server npm list
+
+$ npm install express --save
+$ npm install cookie-parser --save
+$ npm install express-session --save
+$ npm install express-error-handler --save
+
+server execute
+$ node app.js
