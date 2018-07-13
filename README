@@ -1,10 +1,16 @@
+1. package install
+$ npm install
 
-server npm list
+2. server execute
+$ node app.js
 
+>>> server npm list
 $ npm install express --save
 $ npm install cookie-parser --save
 $ npm install express-session --save
 $ npm install express-error-handler --save
 
-server execute
-$ node app.js
+about GIT
+
+1. add change id process
+scp -p -P 29418 dlgmlals3@218.38.52.30:hooks/commit-msg .git/hooks/
