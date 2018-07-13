@@ -9,7 +9,7 @@ var roomSchema = new Schema({
     sex : Number,
     price : Number,
     openUrl : String,
-    explain : String  
+    explain : String
 });
 
 module.exports = mongoose.model('room',roomSchema);
