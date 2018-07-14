@@ -12,20 +12,4 @@ exports.connectDB = function(MongoClient) {
 }
 exports.findPassword = function(db, id) {
   console.log('findPassword ID : ' + id);
-  var users = db.collection('users');
-  users.find({
-    "id": id
-  }).toArray(function(err, docs) {
-    if (err) {
-      callback(err, null);
-      return;
-    }
-    if (docs.length > 0) {
-      console.log('find users');
-      callback(null, docs);
-    } else {
-      console.log('not find users');
-      callback(null, docs);
-    }
-  });
 }
