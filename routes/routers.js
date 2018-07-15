@@ -2,7 +2,6 @@
 
   app.get('/room', function(req, res) {
     console.log('GET /room call router');
-
     res.json({
       statusCode: '200',
       statusMsg: 'success',
