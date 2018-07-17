@@ -7,3 +7,20 @@ sudo apt-get install -y mongodb-org
 
 Mongo db start
 sudo service mongodb restart
+
+
+mongo db command
+$ show dbs;
+$ db.dropDatabase();
+$ use [database]
+$ show collections;
+$ db.createCollection("dlgmlals3")
+
+$ db.dlgmlals3.drop();
+$ db.dlgmlals3.insert ( {name:111, age : 333} );
+$ db.dlgmlals3.insert ( {dd:111, age : 333} );
+$ db.dlgmlals3.insert({"name" : "63Building"})
+$ db.dlgmlals3.find()
+
+
+$ mongo admin -u username -p 'password'
