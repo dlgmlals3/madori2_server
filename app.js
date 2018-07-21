@@ -1,4 +1,3 @@
-// main
 var express = require('express');
 var http = require('http');
 var static = require('serve-static');
@@ -25,7 +24,20 @@ app.use(function(req, res, next) {
 next();
 });
 
+//var test = require('./database/test/roomTest');
+//test.testDB();
+
+var server = http.createServer(app).listen(app.get('port'), function() {
+  console.log('express port : ' + app.get('port'));
+});
+
 var router = require('./routes/routers')(app);
+
+
+
+
+
+
 
 //var errorHandler = expressErrorHandler({
 //  static: {
@@ -40,7 +52,3 @@ var router = require('./routes/routers')(app);
 //var database = dbclient.connectDB(MongoClient);
 // db test api
 //dbclient.findPassword(database, "dlgmlals3");
-
-var server = http.createServer(app).listen(app.get('port'), function() {
-  console.log('express port : ' + app.get('port'));
-});

@@ -39,6 +39,7 @@
     });
   });
 
+//iso stting
   app.get('/room/:roomId', function(req, res) {
     console.log('GET /room/:roomId');
     res.json({
@@ -49,10 +50,14 @@
         title: 'gjrbdnjs',
         ageMin: '30',
         ageMax: '40',
+	date: '2016-02-13',
+	location : 'seoul',
         gender: 'm',
         price: '50000',
         openUrl: 'asdfasdf',
-        intro: '123213'
+        intro: '123213',
+	maxMemberNum : '3',
+	registDate: '2016-02-13'
       }
     });
   })

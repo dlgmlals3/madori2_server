@@ -1,7 +1,14 @@
-function db connect
+var mongoose = require('mongoose');
 
-function db closed
+exports.connectDB = function(dbName, port) {
+	dbUrl = 'mongodb://localhost:' + port + '/' + dbName;
+	mongoose.connect(dbUrl, { useNewUrlParser: true });
 
-function create user schema(user schema name)
+	var db = mongoose.connection;
+	db.on('error', console.error.bind(console, 'connection error:'));
 
-function delete user schema
+	db.once('open', function() {
+		console.log(dbUrl + ' connected ... ');
+	});
+	return db;
+}
