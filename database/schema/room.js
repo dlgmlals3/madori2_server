@@ -1,99 +1,113 @@
 var mongoose = require('mongoose');
+var autoIncrement = require('mongoose-auto-increment');
+var roomId = 0;
 
-var roomSchema = new mongoose.Schema({
+var roomSchema = mongoose.Schema({
+  roomId:{type: Number,default :1},
   title: String,
   ageMin: Number,
   ageMax: Number,
-  date: Number,
-  gender: Number,
+  regDate: String,
+  gender: String,
   price: Number,
   openUrl: String,
-  explain: String
+  intro: String
 });
 
-roomSchema.statics.insertRoom = function(req, res) {
-  roomObj = new this();
-  roomObj.title = req.body.title;
-  roomObj.ageMin = req.body.ageMin;
-  roomObj.ageMax = req.body.ageMax;
-  roomObj.regDate = req.body.regDate;
-  roomObj.gender = req.body.gender;
-  roomObj.price = req.body.price;
-  roomObj.openUrl = req.body.openUrl;
-  roomObj.intro = req.body.explain;
-
-  return roomObj.save(function(err) {
-    returnResult(err, res);
-  })
+roomSchema.statics.insertRoom = async function(req, res) {
+  roomObj = new this({
+    title: req.body.title,
+    ageMin: 111,
+    ageMax: 111,
+    regDate: req.body.regDate,
+    gender: req.body.gender,
+    price: req.body.price,
+    openUrl: req.body.openUrl,
+    intro: req.body.intro,
+  });
+  let result = await roomObj.save({
+    //returnResult(err, res);
+  });
 }
 
-roomSchema.statics.getRoomList = function(err) {
-  this.find({}, function(err, docs) {
-    var result = new Array();
-    for (var i = 0, size = docs.length; i < size; i++) {
-      /* TODO Hecules all item */
-      var roomObj = new Object();
-      roomObj.title = docs[i].title;
-      roomObj.ageMin = docs[i].ageMin;
-      result.push(roomObj);
-    }
-    var jsonData = JSON.stringify(result);
-    //console.log(jsonData);
-    return jsonData;
-  })
+roomSchema.statics.getRoomList = async function() {
+  let resultFind = await this.find({});
+  return resultFind;
 }
 
-roomSchema.statics.getRoomElement = function(req, res, callback) {
-  return this.find({
-    title: title
-  }, callback);
+roomSchema.statics.deleteAllRoom = async function() {
+  let result = await this.remove({});
 }
 
-/* TODO */
-roomSchema.statics.updateRoom = function(req, res) {
-  Room.findById(req.params.roomId, function(err, rooms) {
-    if (err) return console.log('database failure');
-    if (!rooms) return console.log('room not found');
-
-    console.log(req.body.title);
-
-    if (req.body.title) rooms.title = req.body.title;
-    if (req.body.agMin) rooms.ageMin = req.body.ageMin;
-    if (req.body.ageMax) rooms.ageMax = req.body.ageMax;
-    if (req.body.regDate) rooms.date = req.body.date;
-    if (req.body.gender) rooms.gender = req.body.gender;
-    if (req.body.price) rooms.price = req.body.price;
-    if (req.body.openUrl) rooms.openUrl = req.body.openUrl;
-    if (req.body.explain) rooms.explain = req.body.explain;
-
-    room.save(function(err) {
-      returnResult(err, res);
-    });
-    return res;
-  })
+roomSchema.statics.updateRoom = async function(req, res) {
+  console.log("find req roomId : " + req.params.roomId);
+  var room = await this.findOne({
+    'roomId': req.params.roomId
+  });
+  if (!room) {
+    console.log('room not found');
+    return false;
+  }
+  if (req.body.title) room.title = req.body.title;
+  if (req.body.agMin) room.ageMin = req.body.ageMin;
+  if (req.body.ageMax) room.ageMax = req.body.ageMax;
+  if (req.body.regDate) room.date = req.body.regDate;
+  if (req.body.gender) room.gender = req.body.gender;
+  if (req.body.price) room.price = req.body.price;
+  if (req.body.openUrl) room.openUrl = req.body.openUrl;
+  if (req.body.explain) room.explain = req.body.explain;
+  result = await room.save();
+  return true;
 }
 
-roomSchema.statics.deleteRoom = function(req, res) {
-  Room.remove({
-      title: req.params.roomId
-    },
-    function(err, output) {
-      returnResult(err, res);
-    }
-  );
-  return res;
+roomSchema.statics.getRoomElement = async function(req, res) {
+  console.log("find req roomId : " + req.params.roomId);
+  var room = await this.findOne({
+    'roomId': req.params.roomId
+  });
+  if (!room) {
+    console.log('room not found');
+    return false;
+  }
+  if (room.title) res.body.title = room.title;
+  if (room.agMin) res.body.ageMin = room.ageMin;
+  if (room.ageMax) res.body.ageMax = room.ageMax;
+  if (room.regDate) res.body.date = room.regDate;
+  if (room.gender) res.body.gender = room.gender;
+  if (room.price) res.body.price = room.price;
+  if (room.openUrl) res.body.openUrl = room.openUrl;
+  if (room.explain) res.body.explain = room.explain;
+  return true;
 }
 
+
+roomSchema.statics.deleteRoom = async function(req, res) {
+  console.log("find req roomId : " + req.params.roomId);
+  var room = await this.findOne({
+    'roomId': req.params.roomId
+  });
+  if (!room) {
+    console.log('room not found');
+    return null;
+  }
+  console.log("room found title : " + room.title);
+  await room.remove();
+  return true;
+}
+
+
+autoIncrement.initialize(mongoose.connection);
+roomSchema.plugin(autoIncrement.plugin,{model:'rooms',field:'roomId', startAt :1});
+module.exports = mongoose.model('rooms', roomSchema);
+/*
 var returnResult = function(err, res) {
   if (err) {
     res.status(500).send({
       error: 'database failure'
     });
   }
-  /*res.json({
-    statusCode: '200',
-    statusMsg: 'success'
-  });*/
-}
-
-module.exports = mongoose.model('room', roomSchema);
+	*/
+/*res.json({
+  statusCode: '200',
+  statusMsg: 'success'
+});*/

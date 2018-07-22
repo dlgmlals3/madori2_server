@@ -10,6 +10,7 @@ exports.connectDB = function(MongoClient) {
     return db;
   });
 }
+
 exports.findPassword = function(db, id) {
   console.log('findPassword ID : ' + id);
 }
