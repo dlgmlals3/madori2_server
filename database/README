@@ -8,7 +8,6 @@ sudo apt-get install -y mongodb-org
 Mongo db start
 sudo service mongodb restart
 
-
 mongo db command
 $ show dbs;
 $ db.dropDatabase();
