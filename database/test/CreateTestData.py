@@ -1,7 +1,7 @@
 import os
 import sys
 import argparse 
-
+import json
 import pymongo
 from pymongo import MongoClient
 
@@ -26,10 +26,12 @@ collection.remove()
 db.collection.drop()
 
 # db insert Data
-collection.insert({"name": 'simon', "age" : 21})
-collection.insert({"name": 'minwoohi', "age" : 31})
-collection.insert({"name": 'mesi', "age" : 28})
-collection.insert({"name": 'heculous', "age" : 29})
+#collection.insert({"title": 'green night', "ageMin" : 20, "ageMax" : 32, "regDate" : "2018/03/03", "location" : "hong dae green", "gender" : "Male", "price" : 30000, "openUrl" : "www.ej.com", "intro" : "come come", "maxMemberNum" : "5", "registDate" : "2018/03/03"});
+page = open("RoomsTestData.json", "r")
+parsed = json.loads(page.read())
+
+for item in parsed:
+    collection.insert(item)
 
 results = collection.find()
 for result in results:

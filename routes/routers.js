@@ -33,10 +33,12 @@
 
 	app.post('/room', function(req, res) {
 		console.log('POST /room');
-
 		var mongooseApi = require('../database/mongooseApi');
 		var RoomModel = require('../database/schema/room');
-		mongooseApi.connectDB('locals',27017);
+
+		var dbName = app.get('dbName');
+	  var dbPort = app.get('dbPort');
+		mongooseApi.connectDB(dbName, dbPort);
 		var bodyReq = castReq(req);
 
 		console.log(bodyReq);
