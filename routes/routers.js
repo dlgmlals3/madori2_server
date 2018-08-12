@@ -31,13 +31,23 @@
 
   });
 
-  app.post('/room', function(req, res) {
-    console.log('POST /room');
-    res.json({
-      statusCode: '200',
-      statusMsg: 'success'
-    });
-  });
+	app.post('/room', function(req, res) {
+		console.log('POST /room');
+
+		var mongooseApi = require('../database/mongooseApi');
+		var RoomModel = require('../database/schema/room');
+		mongooseApi.connectDB('locals',27017);
+		var bodyReq = castReq(req);
+
+		console.log(bodyReq);
+
+		RoomModel.insertRoom(bodyReq);
+
+		res.json({
+			statusCode: '200',
+			statusMsg: 'success'
+		});
+	});
 
 //iso stting
   app.get('/room/:roomId', function(req, res) {
@@ -144,23 +154,27 @@
       total: '2',
       resultList: [{
           roomId: '_id1',
-          title: 'dlgmlals',
+          title: '홍대 그라에서 놀고싶다...',
           ageMin: '30',
           ageMax: '40',
           gender: 'm',
           price: '50000',
-          openUrl: 'asdfasdf',
-          intro: '123213'
+          openUrl: 'asdfasdf@kakao',
+          intro: '123213',
+					place: '홍대',
+				  date: '2018/08/07',
         },
         {
           roomId: '_id2',
-          title: 'gjrbdnjs',
+          title: '강남 클럽에서 놀고싶네...',
           ageMin: '30',
           ageMax: '40',
           gender: 'm',
-          price: '50000',
-          openUrl: 'asdfasdf',
-          intro: '123213'
+          price: '1000000',
+          openUrl: 'asdfasdf@kakao',
+          intro: '123213',
+      		place: '강남',
+				  date: '2018/08/08'
         }
       ]
     });
@@ -173,4 +187,14 @@
     });
   })
 
+}
+
+
+function castReq(req){
+
+	var temp ={};
+	temp = JSON.stringify(req['body']);
+	var result ={body:''};
+	result.body = JSON.parse(temp.replace(/\:\"(\d+)\"([,\}])/g, '\:$1$2'));
+	return result;
 }
