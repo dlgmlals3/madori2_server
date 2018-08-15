@@ -35,6 +35,14 @@ switch (port) {
 app.set('port',  port);
 app.set('dbName',  dbName);
 app.set('dbPort',  dbPort || 27017);
+
+/* db connect */
+console.log("db connect");
+var mongooseApi = require('./database/mongooseApi');
+var dbName = app.get('dbName');
+var dbPort = app.get('dbPort');
+mongooseApi.connectDB(dbName, dbPort);
+
 app.use(bodyParser.urlencoded ({ extended: false }));
 app.use(bodyParser.json());
 
