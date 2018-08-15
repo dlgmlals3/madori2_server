@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 
 exports.connectDB = function(dbName, port) {
-  dbUrl = '    mongodb://localhost:' + port + '/' + dbName;
+  dbUrl = 'mongodb://localhost:' + port + '/' + dbName;
   mongoose.Promice = global.Promise;
   mongoose.connect(dbUrl, {useNewUrlParser: true});
   

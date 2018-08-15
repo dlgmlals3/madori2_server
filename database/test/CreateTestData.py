@@ -9,11 +9,14 @@ from pymongo import MongoClient
 parser = argparse.ArgumentParser(description='dbCreate [dbName]')
 parser.add_argument("-d", "--dbName", required=True)
 parser.add_argument("-c", "--collectionName", required=True)
+parser.add_argument("-j", "--srcJson", required=True)
+
 args = parser.parse_args()
 dbName = args.dbName
 collectionName = args.collectionName
-print ('dbName : ' + dbName + 'collectionName' + collectionName + '\n');
+jsonFile = args.srcJson
 
+print ('dbName : ' + dbName + 'collectionName' + collectionName + '\n');
 # db connect
 client = MongoClient('127.0.0.1', 27017)
 
@@ -27,7 +30,7 @@ db.collection.drop()
 
 # db insert Data
 #collection.insert({"title": 'green night', "ageMin" : 20, "ageMax" : 32, "regDate" : "2018/03/03", "location" : "hong dae green", "gender" : "Male", "price" : 30000, "openUrl" : "www.ej.com", "intro" : "come come", "maxMemberNum" : "5", "registDate" : "2018/03/03"});
-page = open("RoomsTestData.json", "r")
+page = open(jsonFile, "r")
 parsed = json.loads(page.read())
 
 for item in parsed:
