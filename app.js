@@ -8,12 +8,33 @@ var expressSession = require('express-session');
 var expressErrorHandler = require('express-error-handler');
 
 var app = express();
-
-var defaultPort = 3333;
 var port = process.argv[2];
+var dbPort = process.argv[3];
+var dbName = "testDB";
 
 /* setting global variable */
-app.set('port',  port || defaultPort);
+console.log("usage....> $ node app.js [ServerPort] [DbPort]\n\n");
+switch (port) {
+  case "3300":
+	  dbName = "simon"
+		break;
+	case "3301":
+	  dbName = "minwoohi"
+		break;
+	case "3302":
+	  dbName = "heculous"
+		break;
+	case "3303":
+	  dbName = "mesi"
+		break;
+	default:
+	  console.log("ServerPort(3300(simon) or 3301(minwoohi) or 3302(heculous) or 3303(mesi)");
+	  process.exit(-1);
+}
+	
+app.set('port',  port);
+app.set('dbName',  dbName);
+app.set('dbPort',  dbPort || 27017);
 app.use(bodyParser.urlencoded ({ extended: false }));
 app.use(bodyParser.json());
 
@@ -26,7 +47,8 @@ next();
 });
 
 var server = http.createServer(app).listen(app.get('port'), function() {
-  console.log('express port : ' + app.get('port'));
+  console.log('express port : ' + app.get('port') + ', dbName : ' + app.get('dbName')
+					+ ', dbPort : ' + app.get('dbPort'));
 });
 
 var router = require('./routes/routers')(app);
