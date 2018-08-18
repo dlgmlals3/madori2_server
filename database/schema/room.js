@@ -11,12 +11,12 @@ var roomSchema = mongoose.Schema({
   ageMin: Number,
   ageMax: Number,
   regDate: String,
-  location: String,
+  place: String,
   gender: String,
   price: Number,
   openUrl: String,
   intro: String,
-  maxMemberNum: String,
+  maxMemberNum: Number,
   registDate: String
 });
 
@@ -27,13 +27,13 @@ roomSchema.statics.insertRoom = async function(req, res) {
     ageMin: req.body.ageMin,
     ageMax: req.body.ageMax,
     regDate: req.body.regDate,
-    location: req.body.location,
+    place: req.body.place,
     gender: req.body.gender,
     price: req.body.price,
     openUrl: req.body.openUrl,
     intro: req.body.intro,
-    maxMemberNum: String,
-    registDate: String
+    maxMemberNum: req.body.maxMemberNum,
+    registDate: req.body.registDate
   });
   let result = await roomObj.save({
     //returnResult(err, res);
@@ -63,11 +63,11 @@ roomSchema.statics.updateRoom = async function(req, res) {
   if (req.body.agMin) room.ageMin = req.body.ageMin;
   if (req.body.ageMax) room.ageMax = req.body.ageMax;
   if (req.body.regDate) room.date = req.body.regDate;
-  if (req.body.location) room.location = req.body.location;
+  if (req.body.place) room.place = req.body.place;
   if (req.body.gender) room.gender = req.body.gender;
   if (req.body.price) room.price = req.body.price;
   if (req.body.openUrl) room.openUrl = req.body.openUrl;
-  if (req.body.explain) room.explain = req.body.explain;
+  if (req.body.intro) room.intro = req.body.intro;
   result = await room.save();
   return true;
 }
@@ -88,16 +88,16 @@ roomSchema.statics.getRoomElement = async function(req, res) {
 
   if (room.memberId) res.memberId = room.memberId;
   if (room.title) res.title = room.title;
-  if (room.agMin) res.ageMin = room.ageMin;
+  if (room.ageMin) res.ageMin = room.ageMin;
   if (room.ageMax) res.ageMax = room.ageMax;
-  if (room.regDate) res.date = room.regDate;
-  if (room.location) room.location = room.location;
+  if (room.regDate) res.regDate = room.regDate;
+  if (room.place) res.place = room.place;
   if (room.gender) res.gender = room.gender;
   if (room.price) res.price = room.price;
   if (room.openUrl) res.openUrl = room.openUrl;
   if (room.intro) res.intro = room.intro;
-  if (room.location) res.location = room.location;
-  if (room.explain) res.explain = room.explain;
+  if (room.registDate) res.registDate = room.registDate; // nono
+	if (room.maxMemberNum) res.maxMemberNum = room.maxMemberNum;
 
   //console.log("server memberId :" + res.memberId + " " + res.title)
   return true;
@@ -116,6 +116,24 @@ roomSchema.statics.deleteRoom = async function(req, res) {
   console.log("room found title : " + room.title);
   await room.remove();
   return true;
+}
+
+roomSchema.statics.existRoom = async function(req,res){
+	console.log('find... my room');
+	var room = await this.findOne({
+		'memberId':req.params.memberId
+	});
+	console.log(req.params.memberId);
+	var result;
+		if(!room){
+	 	console.log('room not found');
+	 	result = false;
+
+	 }else{
+	 	console.log('exist room');
+		result = true;
+	 }
+	 return result;
 }
 
 

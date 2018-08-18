@@ -14,7 +14,7 @@ requestRoom.statics.insert = async function(req, res) {
 	let result = await requestRoomObj.save({
 		//returnResult(err, res);
 	});
-}
+};
 
 requestRoom.statics.getList = async function() {
 	let resultFind = await this.find({});
