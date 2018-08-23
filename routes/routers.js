@@ -1,8 +1,23 @@
 ﻿module.exports = function(app) {
 
-	app.get('/room', function(req, res) {
+	app.get('/room', async function(req, res) {
 		console.log('GET /room call router');
+   	var RoomModel = require('../database/schema/room');
+		let resultRows = await RoomModel.getRoomList();
+		if (resultRows != null) {
+			resultStatus = 'success';
+		}
+
+		let pageCount = resultRows.length;
+
+		console.log("result : " + pageCount);
 		res.json({
+						statusCode: '200',
+						statusMsg: resultStatus,
+						total: pageCount,
+						resultList: resultRows
+		});
+/*		res.json({
 			statusCode: '200',
 			statusMsg: 'success',
 			total: '2',
@@ -28,7 +43,7 @@
 				}
 			]
 		});
-
+*/
 	});
 
 	app.post('/room', function(req, res) {
