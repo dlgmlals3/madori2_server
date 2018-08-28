@@ -41,8 +41,12 @@ roomSchema.statics.insertRoom = async function(req, res) {
 }
 
 roomSchema.statics.getRoomList = async function() {
-  let resultFind = await this.find({});
+  let resultFind = await this.find({}).limit(getRoomCount());
   return resultFind;
+}
+
+var getRoomCount = function() {
+	return 30; // after is modified...
 }
 
 roomSchema.statics.deleteAllRoom = async function() {
