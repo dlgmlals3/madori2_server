@@ -15,6 +15,9 @@ var dbName = "testDB";
 /* setting global variable */
 console.log("usage....> $ node app.js [ServerPort] [DbPort]\n\n");
 switch (port) {
+  case "3000":
+	  dbName = "simon"
+		break;
   case "3300":
 	  dbName = "simon"
 		break;
@@ -35,6 +38,27 @@ switch (port) {
 app.set('port',  port);
 app.set('dbName',  dbName);
 app.set('dbPort',  dbPort || 27017);
+
+/* swagger */
+const swaggerUi = require('swagger-ui-express');
+// https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md
+// http://218.38.52.30:3000/api-docs
+var swaggerDefinition = {
+   info: {
+       title: 'Madori2 swagger',
+       version: '1.0.0', 
+       description: 'API',
+   },
+   host: '218.38.52.30:3000',
+   basePath: '/',
+}
+var options = {
+  swaggerDefinition: swaggerDefinition,
+  apis: ['./routes/parameters.yaml']
+}
+const swaggerJSDoc = require('swagger-jsdoc')
+const swaggerSpec = swaggerJSDoc(options)
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 /* db connect */
 console.log("db connect");
