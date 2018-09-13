@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset = "UTF-8">
+		<title> chat client 01</title>
+		<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+		<!--  https://cdnjs.com/libraries/socket.io  -->
+		<script>
+			var socket;
+			$(function() {	
+				$("#connectButton").bind('click', function(event) {
+					var host = $('#hostInput').val();
+					var port = $('#portInput').val();
+					connectToServer(host, port);
+				});
+			});
+				
+			function connectToServer(host, port) {
+				// use socket io api io object
+				var url = 'http://' + host + ':' + port;
+				var options = {
+					forceNew:true
+				};
+				socket = io.connect(url, options);
+				//verify connection
+				socket.on('connect', function() {
+					println('web socket server is connected ' + url);
+				});
+				socket.on('disconnect', function() {
+					println('web socket server is disconnected' + url);
+				});
+				
+				socket.on('message', function(message) {
+					println('recipient message -> ' + JSON.stringify(message));
+				});
+				
+				socket.on('response', function(input) {
+					println('reponse!!' + JSON.stringify(input));
+				});
+			}
+			
+			function login() {
+				var id = $('#idInput').val();
+				var password = $('#passwordInput').val();
+				var alias = $('#aliasInput').val();
+				var today = $('#todayInput').val();
+				
+				var output = {
+					id:id,
+					password:password,
+					alias:alias,
+					today:today
+				}
+				socket.emit('login', output );
+			}
+			
+			function send() {
+				var sender = $('#senderInput').val();
+				var recipient = $('#recepientInput').val();
+				var data = $('#dataInput').val();
+				
+				var output = {
+					sender:sender,
+					recepient:recipient,
+					command:'chat',
+					type:'text',
+					data:data
+				};
+				socket.emit('message', output);	
+			}
+			
+			function println(data) {
+				console.log(data);
+				$('#results').append('<p>' + data + '</p>');
+			}
+		</script>
+	</head>
+	<body>
+		<h3> chat client 01 </h3>
+		<br>
+		<div>
+			<h5>서버 연결</h5>
+			<input type = "text" id = "hostInput" value="218.38.52.30" >
+			<input type = "text" id = "portInput" value="3000">
+			<input type = "button" id = "connectButton" value = "connect">
+		</div>
+		<br>
+		<br>
+		<div>
+			<h5>로그인 </h5>
+			<input type = "text" id = "idInput" value="minwoohi" >
+			<input type = "password" id = "passwordInput" value="123456">
+			<input type = "text" id = "aliasInput" value = "소녀시대">
+			<input type = "text" id = "todayInput" value = "좋은 날!!">
+			
+			<input type = "button" id = "loginButton" value = "로그인" onClick= "login()">
+			<input type = "button" id = "logoutButton" value = "로그아웃" onClick = "logout()">
+		</div>
+		<br>
+		<br>
+		<div>
+			<h5> 메시지 전송 </h5>
+			<div>
+				<span> 보내는 사람 </span>
+				<input type="text" id="senderInput" value="minwoohi" >
+			</div>
+			<div>
+				<span> 받는 사람 </span>
+				<input type="text" id="recepientInput" value="ALL" >
+			</div>
+			<div>
+				<span> 보낼 데이터 </span>
+				<input type="text" id="dataInput" value="hihi i'm simon" >
+			</div>
+			<br>
+			<input type="button" id="sendButton" value="send" onclick="send()" >
+		</div>
+		<hr>
+		<p> result </p>
+		<div id = "results"></div>
+	</body>
+</html>

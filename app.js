@@ -7,6 +7,10 @@ var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
 var expressErrorHandler = require('express-error-handler');
 
+// socket.io use
+var socketio = require('socket.io');
+var cors = require('cors');
+
 var app = express();
 var port = process.argv[2];
 var dbPort = process.argv[3];
@@ -60,6 +64,7 @@ const swaggerJSDoc = require('swagger-jsdoc')
 const swaggerSpec = swaggerJSDoc(options)
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+
 /* db connect */
 console.log("db connect");
 var mongooseApi = require('./database/mongooseApi');
@@ -69,6 +74,9 @@ mongooseApi.connectDB(dbName, dbPort);
 
 app.use(bodyParser.urlencoded ({ extended: false }));
 app.use(bodyParser.json());
+
+// cors initial
+app.use(cors());
 
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
@@ -84,3 +92,60 @@ var server = http.createServer(app).listen(app.get('port'), function() {
 });
 
 var router = require('./routes/routers')(app);
+
+// socket.io server start
+var io = socketio.listen(server);
+console.log('socket.io request to ready');
+
+var login_ids = {}; // login id 와 socket id를 맵핑시킴...
+
+io.sockets.on('connection', function(socket) { // when client try connection
+	//console.log('connection info -> ' +
+	//		JSON.stringify(socket.request.connection._peername));
+	socket.remoteAddress = socket.request.connection._peername.address;
+	socket.remotePort = socket.request.connection._peername.port;
+	console.log('address ' + socket.remoteAddress + ' port : ' + socket.remotePort);
+	// if connection closed, restore connection....
+	
+	socket.on('login', function(input) {
+		console.log('login recieved' + JSON.stringify(input));
+		login_ids[input.id] = socket.id; //로그인 id와 소켓객체 맵핑
+		socket.login_id = input.id;
+		// 로그인 정상적으로 되었는지 알려줌
+		sendResponse(socket, 'login', 200, 'OK');
+	});
+	
+	socket.on('message', function(message) {
+		console.log('message recieved ->' + JSON.stringify(message));
+		// send to client
+		if (message.recepient == 'ALL') {
+			console.log('send message to all client');
+			io.sockets.emit('message', message);// send to all people == echo
+			// socket.broadcast.emit(event, object) 나를 제외한 모든 클라이언트에게 전송
+		} else {
+			// 상대방을 찾아서 전송을 해야함
+			// socket id를 알아야함
+			if (login_ids[message.recipient]) {
+				io.sockets.connected[login_ids[message.recipient]].emit('message', message);
+				//login_ids[message.recipient].emit('message', '1234123413412341234');
+				// 로그인을 하고있는 소켓들 중에 ( io.socket.connected )
+				// socketid.emit()
+				console.log('login recieved');
+				sendResponse(socket, 'message', 200, 'OK');
+			} else {
+				sendResponse(socket, 'message', 400, 'no id');
+			}
+		}
+	});
+});
+
+function sendResponse(socket, command, code, message) {
+	var output = {
+		command:command,
+		code:code,
+		message:message
+	}
+	socket.emit('response', output);
+}
+
+//https://www.youtube.com/watch?v=0pnMYLzZ48A&index=81&list=PLG7te9eYUi7tHH-hJ2yzBJ9h6dwBu1FUy
