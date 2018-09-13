@@ -4,13 +4,24 @@ $ npm install
 2. server execute
 $ node app.js
 
->>> server npm list
-$ npm install express --save
-$ npm install cookie-parser --save
-$ npm install express-session --save
-$ npm install express-error-handler --save
-
 about GIT
 
 1. add change id process
 scp -p -P 29418 dlgmlals3@218.38.52.30:hooks/commit-msg .git/hooks/
+
+server failure
+
+1. gerrit restart
+$ sudo su gerrit // account chagned to gerrit.
+$ cd gerrit_testsite/bin
+$ ./gerrit.sh start
+$ ps -ef | grep gerrit // check gerrit process
+// GerritCodeReview -jar /home/gerrit/gerrit_testsite/bin/gerrit.war .....
+
+2. ldap server connect // gerrit account
+http://218.38.52.30/phpldapadmin/
+// id : cn=admin,dc=dlgmlals3,dc=com
+// pw : XXXXX
+
+3. gerrit account connect
+id : gerrit, pw : gerrit
