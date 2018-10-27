@@ -29,13 +29,13 @@ switch (port) {
 	  dbName = "minwoohi"
 		break;
 	case "3302":
-	  dbName = "heculous"
+	  dbName = "heocules"
 		break;
 	case "3303":
 	  dbName = "mesi"
 		break;
 	default:
-	  console.log("ServerPort(3300(simon) or 3301(minwoohi) or 3302(heculous) or 3303(mesi)");
+	  console.log("ServerPort(3300(simon) or 3301(minwoohi) or 3302(heocules) or 3303(mesi)");
 	  process.exit(-1);
 }
 	
@@ -53,7 +53,7 @@ var swaggerDefinition = {
        version: '1.0.0', 
        description: 'API',
    },
-   host: '218.38.52.30:3000',
+   host: '218.38.52.30:3302',
    basePath: '/',
 }
 var options = {
