@@ -49,7 +49,7 @@
 	app.post('/room', function(req, res) {
 		console.log('POST /room');
 		var RoomModel = require('../database/schema/room');
-		var bodyReq = castReq(req);
+		var bodyReq = castBody(req);
 
 		console.log(bodyReq);
 
@@ -84,7 +84,14 @@
 	})
 
 	app.put('/room/:roomId', function(req, res) {
-		console.log('PUT /room/:roomId 라우팅 함수에서 호출');
+		console.log('PUT /room/:roomId');
+		var RoomModel = require('../database/schema/room');
+		var reqBody = castBody(req);
+		var reqParam = castParam(req);
+		console.log(req);
+		RoomModel.updateRoom(reqParam,reqBody);
+		console.log(reqParam);
+		console.log(reqBody);
 		res.json({
 			statusCode: '200',
 			statusMsg: 'success'
@@ -93,7 +100,7 @@
 	})
 
 	app.delete('/room/:roomId', function(req, res) {
-		console.log('DELETE /room/:roomId 라우팅 함수에서 호출');
+		console.log('DELETE /room/:roomId');
 		res.json({
 			statusCode: '200',
 			statusMsg: 'success'
@@ -204,7 +211,7 @@
 		});
 	});
 
-	app.get('/getuserinfo/:userid', function(req, res) {
+	app.get('/getUserinfo/:userId', function(req, res) {
 		console.log('GET /getUserInfo' + req);
 		var request = req.params.userId;
 
@@ -229,13 +236,24 @@
 };
 
 
-function castReq(req) {
+function castBody(req) {
 
 	var temp = {};
 	temp = JSON.stringify(req.body);
-	var result = {
-		body: ''
-	};
+	var result = {body: ''};
 	result.body = JSON.parse(temp.replace(/\:\"(\d+)\"([,\}])/g, '\:$1$2'));
 	return result;
 }
+
+function castParam(req){
+	var temp = {};
+	temp = JSON.stringify(req.params);
+	var result = {params:''};
+	result.params = JSON.parse(temp.replace(/\:\"(\d+)\"([,\}])/g, '\:$1$2'));
+	return result;
+}
+
+
+
+
+

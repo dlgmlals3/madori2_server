@@ -8,13 +8,9 @@ info:
     email: "apiteam@swagger.io"
   license:
     name: "Apache 2.0"
-    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"      
 host: "http://218.38.52.30"
-basePath: "/v2"
-
-tags:
-- name: "room"
-  description: "room lists"
+basePath: "/2"
 schemes:
 - "https"
 - "http"
@@ -23,12 +19,15 @@ paths:
     get:
       tags:
       - "room"
-      summary: "Returns room lists"
-      description: "Returns room lists"
+      summary: "room list"
+      description: "Get room list"
       operationId: "operationId"
-      produces:
-      - "application/json"
-      parameters: []
+      parameters: 
+        - name : "room"
+          in : "path"
+          description: "path" 
+          required: true
+          type: "string"
       responses:
         200:
           description: "successful operation"
@@ -38,81 +37,306 @@ paths:
               type: "integer"
               format: "int32"
       security:
-      - api_key: []
-  /store/order:
+      -api_key: []
+    
+    
     post:
       tags:
-      - "store"
-      summary: "Place an order for a pet"
-      description: ""
-      operationId: "placeOrder"
+      - "room create"
+      summary: "Create room"
+      description: "create room"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
-      - in: "body"
-        name: "body"
-        description: "order placed for purchasing the pet"
+      - name: "room"
+        in: "body"
+        description: "room schema object"
         required: true
         schema:
-          $ref: "#/definitions/Order"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Order"
-        400:
-          description: "Invalid Order"
-  /store/order/{orderId}:
+          type: json
+          required:
+            - title
+          properties:
+            title: 
+              type: string
+            ageMin:
+              type: string
+            ageMax:
+              type: string
+            regDate:
+              type: string
+            place:
+              type: string
+            gender:
+              type: string
+            price:
+              type: string
+            openUrl:
+              type: string
+            intro:
+              type: string
+            maxMemberNum:
+              type: string
+            registDate:
+              type: string
+            createrId:
+              type: string
+        responses:
+          200:
+            description: "successful operation"
+          400:
+            description: "Invalid Order"
+
+
+
+  /room/{roomId}:
     get:
       tags:
-      - "store"
-      summary: "Find purchase order by ID"
-      description: "For valid response try integer IDs with value >= 1 and <= 10.         Other values will generated exceptions"
-      operationId: "getOrderById"
+      - "room/roomId"
+      summary: "Get only one room(comming soon)"
+      description: "Get only one room"
       produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - name: "orderId"
-        in: "path"
-        description: "ID of pet that needs to be fetched"
+      - "applivation/json"
+      parameters: 
+      - name : "roomId"
+        in : "path"
+        description: "roomId" 
         required: true
-        type: "integer"
-        maximum: 10.0
-        minimum: 1.0
-        format: "int64"
+        schema:
+          type: json
+          required:
+            - title
+          properties:
       responses:
         200:
           description: "successful operation"
-          schema:
-            $ref: "#/definitions/Order"
         400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Order not found"
-    delete:
+          description: "Invalid Order"
+    put:
       tags:
-      - "store"
-      summary: "Delete purchase order by ID"
-      description: "For valid response try integer IDs with positive integer value.         Negative or non-integer values will generate API errors"
-      operationId: "deleteOrder"
+      - "room/roomId"
+      summary: "Update only one room"
+      description: "Update only one room"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
-      - name: "orderId"
-        in: "path"
-        description: "ID of the order that needs to be deleted"
+      - name : "roomId"
+        in : "path"
+        description: "roomId of creater" 
         required: true
-        type: "integer"
-        minimum: 1.0
-        format: "int64"
+      - name : "room info"
+        in : "body"
+        description: "room infomation"
+        schema:
+          type: json
+          required:
+            - title
+          properties:
+            title: 
+              type: string
+            ageMin:
+              type: string
+            ageMax:
+              type: string
+            regDate:
+              type: string
+            place:
+              type: string
+            gender:
+              type: string
+            price:
+              type: string
+            openUrl:
+              type: string
+            intro:
+              type: string
+            maxMemberNum:
+              type: string
+            registDate:
+              type: string
+            createrId:
+              type: string
+
       responses:
+        200:
+          description: "successful operation"
         400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Order not found"
+          description: "Invalid Order"
+
+    delete:
+      tags:
+      - "room/roomId"
+      summary: "Delete only one room(comming soon)"
+      description: "Delete only one room"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "roomId"
+        in: "query"
+        description: "roomId"
+        required: true
+      responses:
+        200:
+          description: "successful operation"
+        400:
+          description: "Invalid Order"
+
+  
+  /room/list/{keyword}:
+    get:
+      tags:
+      - "room search"
+      summary: "rooms search(comming soon)"
+      description: "Rooms search"
+      produces:
+      - "application/json"
+      parameters:
+      - name: keyword
+        in: query
+        description: "keyword"
+        required: true
+      responses:
+        200:
+          description: "successful operation"
+        400:
+          description: "Invalid Order"
+
+
+  /member/requester-room/:roomId:
+    get:
+      tags:
+      - "member"
+      summary: "my requested room(comming soon)"
+      description: "My requested room"
+      produces:
+      - "application/json"
+      parameters:
+      - name: roomId
+        in: query
+        description: "roomId"
+        required: true
+      responses:
+        200:
+          description: "successful operation"
+        400:
+          description: "Invalid Order"
+
+
+  /room/requester-room:
+    post:
+      tags:
+      - "room/requester-room"
+      summary: "join room(?)(comming soon)"
+      description: "join room(?)"
+      produces:
+      - "application/json"
+      parameters:
+      - name: userId
+        in: body
+        description: "requester-room"
+        required: true
+      responses:
+        200:
+          description: "successful operation"
+        400:
+          description: "Invalid Order"
+
+
+  /room/requster-room/{memberId}:
+    get:
+      tags:
+      - "room/requester-room"
+      summary: "requested room(comming soon)"
+      description: "requested room"
+      produces:
+      - "application/json"
+      parameters:
+      - name: memberId
+        in: query
+        description: "memberId"
+        required: true
+      responses:
+        200:
+          description: "successful operation"
+        400:
+          description: "Invalid Order"
+
+    delete:
+      tags:
+      - "room/requester-room"
+      summary: "requested cancle(comming soon)"
+      description: "requested delete"
+      produces:
+      - "application/json"
+      parameters:
+      - name: memberId
+        in: body
+        description: "memberId"
+        required: true
+      responses:
+        200:
+          description: "successful operation"
+        400:
+          description: "Invalid Order"
+
+
+  /member:
+    post:
+      tags:
+      - "member"
+      summary: "Member insert(comming soon)"
+      description: "Member insert"
+      produces:
+      - "application/json"
+      parameters:
+      - name: memberId
+        in: body
+        description: "memberId"
+        required: true
+      responses:
+        200:
+          description: "successful operation"
+        400:
+          description: "Invalid Order"
+
+  /getUserInfo/{userId}:
+    get:
+      tags:
+      - "UserInfo"
+      summary: "get user infomaiton(comming soon)"
+      description: "Get user infomation"
+      produces:
+      - "application/json"
+      parameters:
+      - name: userId
+        in: query
+        description: "userId"
+        required: true
+      responses:
+        200:
+          description: "successful operation"
+        400:
+          description: "Invalid Order"
+
+  /room/isExistMyroom/{memberId}:
+    get:
+      tags:
+      - "room"
+      summary: "ins Exist my room(comming soon)"
+      description: "is Exist my room"
+      produces:
+      - "application/json"
+      parameters:
+      - name: memberId
+        in: query
+        description: "memberId"
+        required: true
+      responses:
+        200:
+          description: "successful operation"
+        400:
+          description: "Invalid Order"
+
 externalDocs:
   description: "Find out more about Swagger"
   url: "http://swagger.io"
