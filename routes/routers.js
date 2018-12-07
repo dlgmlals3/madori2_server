@@ -147,27 +147,26 @@
 			statusCode: '200',
 			statusMsg: 'success',
 			total: '2',
-			resultList: [{
-				memberId: 'dlgmlals3'
-			},
+			resultList: [
+		    {
+				  memberId: 'dlgmlals3'
+			  },
 				{
 					memberId: 'gjrbdnjs'
 				}
 			]
 		});
-
-	})
+	});
 
 	app.post('/room/requester-room', function(req, res) {
 		res.json({
 			statusCode: '200',
 			statusMsg: 'success'
 		});
-	})
+	});
 
-	app.get('/room/requester-room/:memberId', async function(req, res) {
-		console.log("requester-room memberId : " + req.params.memberId);
-
+	app.get('/room/apply-room/:memberId', async function(req, res) {
+		console.log("apply-room myId : " + req.params.memberId);
 		var RoomModel = require('../database/schema/room');
 		await RoomModel.getRoomElement(req, res);
 
@@ -190,7 +189,6 @@
 				registDate: res.registDate
 			}]
 		});
-
 	});
 
 	app.delete('/room/requester-room/:memberId', function(req, res) {
@@ -199,7 +197,6 @@
 			statusMsg: 'success'
 		});
 	});
-
 
 	app.post('/member',function(req,res){
 		console.log('POST /member');
@@ -233,27 +230,20 @@
 			resultList : result
 		});
 	});
-};
 
+	function castBody(req) {
+		var temp = {};
+	  temp = JSON.stringify(req.body);
+	  var result = {body: ''};
+	  result.body = JSON.parse(temp.replace(/\:\"(\d+)\"([,\}])/g, '\:$1$2'));
+	  return result;
+	}
 
-function castBody(req) {
-
-	var temp = {};
-	temp = JSON.stringify(req.body);
-	var result = {body: ''};
-	result.body = JSON.parse(temp.replace(/\:\"(\d+)\"([,\}])/g, '\:$1$2'));
-	return result;
+  function castParam(req) {
+	  var temp = {};
+	  temp = JSON.stringify(req.params);
+	  var result = {params:''};
+	  jresult.params = JSON.parse(temp.replace(/\:\"(\d+)\"([,\}])/g, '\:$1$2'));
+	  return result;
+  }
 }
-
-function castParam(req){
-	var temp = {};
-	temp = JSON.stringify(req.params);
-	var result = {params:''};
-	result.params = JSON.parse(temp.replace(/\:\"(\d+)\"([,\}])/g, '\:$1$2'));
-	return result;
-}
-
-
-
-
-
