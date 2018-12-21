@@ -3,21 +3,22 @@ var autoIncrement = require('mongoose-auto-increment');
 var MemberModel = require('./memberSchema');
 
 var roomSchema = mongoose.Schema({
-	roomId: {type: Number,default: 1},
+  /*dlgmlals3 TODO Insert PK 해서 중복 데이터 안되게 */
+  memberId: {type:String, required:true},
 	title: {type:String, required:true},
 	ageMin: {type:Number,default:20},
 	ageMax: {type:Number,default:30},
-	regDate: {type:Date, required:true},
-	place: {type:String, required:true},
+	regDate: {type:Date, required:true}, /* minwoo */
+	region: {type:String, required:true},
 	gender: {type:String, required:true},
 	price: {type:Number, required:true},
 	openUrl: {type:String, required:true},
 	intro: String,
 	maxMemberNum: Number,
-	registDate: {type:Date,default: Date.now},
+	registDate: {type:Date,default: Date.now}, /* server from */
 	//createrId: {type:mongoose.Schema.Types.ObjectId, ref: 'member',required:true},
-	createrId: {type:mongoose.Schema.Types.ObjectId, ref: 'member'},
-	memberId: [{type:mongoose.Schema.Types.ObjectId, ref: 'member'}]
+	//createrId: {type:mongoose.Schema.Types.ObjectId, ref: 'member'},
+	//memberId: [{type:mongoose.Schema.Types.ObjectId, ref: 'member'}]
 });
 /*
 	memberSchema.statics.findRoomId= async function(req,res){
@@ -39,13 +40,13 @@ var roomSchema = mongoose.Schema({
 */
 
 roomSchema.statics.insertRoom = async function(req, res) {
-
 	roomObj = new this({
+    memberId: req.body.memberId,
 		title: req.body.title,
 		ageMin: req.body.ageMin,
 		ageMax: req.body.ageMax,
 		regDate: req.body.regDate,
-		place: req.body.place,
+		region: req.body.region,
 		gender: req.body.gender,
 		price: req.body.price,
 		openUrl: req.body.openUrl,
@@ -72,70 +73,73 @@ roomSchema.statics.deleteAllRoom = async function() {
 	let result = await this.remove({});
 }
 
-roomSchema.statics.updateRoom = async function(reqParam,reqBody) {
-	console.log("find req roomId : " + reqParam.params.roomId);
-	var room = await this.findOne({roomId: reqParam.params.roomId});
+roomSchema.statics.updateRoom = async function(reqParam, reqBody) {
+	console.log("updateRoom memberId : " + reqParam.params.memberId);
+	var room = await this.findOne ({
+    "memberId" : reqParam.params.memberId
+  });
 	console.log("room : " + room);
+
 	if (!room) {
 		console.log('room not found');
 		return false;
-	}
-	let resultUpdate = await room.update({roomId:reqParam.params.roomId},{set:reqBody.body});
+	} else {
+  	let resultUpdate = await room.update (
+       { memberId : reqParam.params.memberId },
+       { set : reqBody.body });
+    return true;
+  }
 /*
 	this.update({roomId:req.params.roomId}, {&set:req:body},function(err,output){
 		if(err) res.status(500).json({error:'database failure'});
 		console.log("update output : " + output);
 		if(!output.n) return res.status(404).json({error: 'book not found'});
 		})
+  result = await room.save();
 */	
-//result = await room.save();
-	return true;
 }
 
 roomSchema.statics.getRoomElement = async function(req, res) {
 	console.log("find req roomId : " + req.params.memberId);
-	
+
 	var room = await this.findOne({
 		"memberId": req.params.memberId
 	});
-	
+
+	if (!room) {
+		console.log('room not found');
+    return false;
+	} else {
+		console.log('room found : ' + room.memberId);
+    if (room.memberId) res.memberId = room.memberId;
+    if (room.title) res.title = room.title;
+    if (room.ageMin) res.ageMin = room.ageMin;
+    if (room.ageMax) res.ageMax = room.ageMax;
+    if (room.regDate) res.regDate = room.regDate;
+    if (room.region) res.region = room.region;
+    if (room.gender) res.gender = room.gender;
+    if (room.price) res.price = room.price;
+    if (room.openUrl) res.openUrl = room.openUrl;
+    if (room.intro) res.intro = room.intro;
+    if (room.registDate) res.registDate = room.registDate;
+    if (room.maxMemberNum) res.maxMemberNum = room.maxMemberNum;
+    return true;
+	}
+}
+
+roomSchema.statics.deleteRoom = async function(req, res) {
+	console.log("deleteRoom : " + req.params.memberId);
+	var room = await this.findOne({
+		'memberId': req.params.memberId
+	});
 	if (!room) {
 		console.log('room not found');
 		return false;
 	} else {
-		console.log('room found really : ' + room.memberId);
-	}
-	
-	if (room.memberId) res.memberId = room.memberId;
-	if (room.title) res.title = room.title;
-	if (room.ageMin) res.ageMin = room.ageMin;
-	if (room.ageMax) res.ageMax = room.ageMax;
-	if (room.regDate) res.regDate = room.regDate;
-	if (room.place) res.place = room.place;
-	if (room.gender) res.gender = room.gender;
-	if (room.price) res.price = room.price;
-	if (room.openUrl) res.openUrl = room.openUrl;
-	if (room.intro) res.intro = room.intro;
-	if (room.registDate) res.registDate = room.registDate; // nono
-	if (room.maxMemberNum) res.maxMemberNum = room.maxMemberNum;
-	
-	//console.log("server memberId :" + res.memberId + " " + res.title)
-	return true;
-}
-
-
-roomSchema.statics.deleteRoom = async function(req, res) {
-	console.log("find req roomId : " + req.params.roomId);
-	var room = await this.findOne({
-		'roomId': req.params.roomId
-	});
-	if (!room) {
-		console.log('room not found');
-		return null;
-	}
-	console.log("room found title : " + room.title);
-	await room.remove();
-	return true;
+    console.log("room found title : " + room.title);
+    await room.remove();
+    return true;
+  }
 }
 
 roomSchema.statics.existRoom = async function(req,res){
@@ -145,11 +149,11 @@ roomSchema.statics.existRoom = async function(req,res){
 	});
 	console.log(req.params.memberId);
 	var result;
-	if(!room){
+	if(!room) {
 		console.log('room not found');
 		result = false;
 
-	}else{
+	} else {
 		console.log('exist room');
 		result = true;
 	}
@@ -174,10 +178,7 @@ roomSchema.statics.joinRoom = async function(req,res){
 		console.log('room status : '+ room.memberId);
 		result = await room.save();
 	}
-
-
 }
-
 
 autoIncrement.initialize(mongoose.connection);
 roomSchema.plugin(autoIncrement.plugin, {

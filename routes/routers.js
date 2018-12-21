@@ -1,5 +1,5 @@
 ﻿module.exports = function(app) {
-
+  /* dlgmlals3 total data process TODO */
 	app.get('/room', async function(req, res) {
 		console.log('GET /room call router');
    	var RoomModel = require('../database/schema/room');
@@ -11,39 +11,12 @@
 		let pageCount = resultRows.length;
 
 		console.log("result : " + pageCount);
-		res.json({
-						statusCode: '200',
-						statusMsg: resultStatus,
-						total: pageCount,
-						resultList: resultRows
-		});
-/*		res.json({
-			statusCode: '200',
-			statusMsg: 'success',
-			total: '2',
-			resultList: [{
-				roomId: '_id1',
-				title: 'dlgmlals',
-				ageMin: '30',
-				ageMax: '40',
-				gender: 'm',
-				price: '50000',
-				openUrl: 'asdfasdf',
-				intro: '123213'
-			},
-				{
-					roomId: '_id2',
-					title: 'gjrbdnjs',
-					ageMin: '30',
-					ageMax: '40',
-					gender: 'm',
-					price: '50000',
-					openUrl: 'asdfasdf',
-					intro: '123213'
-				}
-			]
-		});
-*/
+		res.json ({
+      statusCode: '200',
+      statusMsg: resultStatus,
+      total: pageCount,
+      resultItems: resultRows
+    });
 	});
 
 	app.post('/room', function(req, res) {
@@ -52,62 +25,86 @@
 		var bodyReq = castBody(req);
 
 		console.log(bodyReq);
-
 		RoomModel.insertRoom(bodyReq);
-
-		res.json({
+		res.json ({
 			statusCode: '200',
 			statusMsg: 'success'
 		});
 	});
 
-	app.get('/room/:roomId', function(req, res) {
-		console.log('GET /room/:roomId');
-		res.json({
-			statusCode: '200',
-			statusMsg: 'success',
-			result: {
-				roomId: '_id2',
-				title: 'gjrbdnjs',
-				ageMin: '30',
-				ageMax: '40',
-				date: '2016-02-13',
-				place: '11',
-				gender: 'm',
-				price: '50000',
-				openUrl: 'asdfasdf',
-				intro: '123213',
-				maxMemberNum: '3',
-				registDate: '2016-02-13'
-			}
-		});
+	app.get('/room/:memberId', async function(req, res) {
+		console.log('GET /room/:memberId');
+  	var RoomModel = require('../database/schema/room');
+		var result = await RoomModel.getRoomElement(req, res);
+	  if (result == true) {
+      res.json({
+        statusCode: '200',
+        statusMsg: 'success',
+        total: '1',
+        resultItem: {
+          memberId: res.memberId,
+          title: res.title,
+          ageMin: res.ageMin,
+          ageMax: res.ageMax,
+          regDate: res.regDate,
+          region: res.region,
+          gender: res.gender,
+          price: res.price,
+          openUrl: res.openUrl,
+          intro: res.intro,
+          maxMemberNum:res.maxMemberNum,
+          registDate: res.registDate
+        }
+      });
+		} else { 
+      res.json({
+        statusCode: '200',
+        statusMsg: 'success',
+        total: '0'
+      });
+		}
 	})
 
-	app.put('/room/:roomId', function(req, res) {
-		console.log('PUT /room/:roomId');
+	app.put('/room/:memberId', async function(req, res) {
+		console.log('PUT /room/:memberId');
 		var RoomModel = require('../database/schema/room');
 		var reqBody = castBody(req);
 		var reqParam = castParam(req);
-		console.log(req);
-		RoomModel.updateRoom(reqParam,reqBody);
-		console.log(reqParam);
-		console.log(reqBody);
-		res.json({
-			statusCode: '200',
-			statusMsg: 'success'
-		});
 
+		var result = RoomModel.updateRoom(reqParam, reqBody);
+    if (result == true) {
+      res.json({
+			  statusCode: '200',
+			  statusMsg: 'success',
+        total: '1'
+		  });
+    } else {
+      res.json({
+			  statusCode: '200',
+			  statusMsg: 'success',
+        total: '0'
+		  });
+    }
 	})
 
-	app.delete('/room/:roomId', function(req, res) {
-		console.log('DELETE /room/:roomId');
-		res.json({
-			statusCode: '200',
-			statusMsg: 'success'
-		});
-
+	app.delete('/room/:memberId', async function(req, res) {
+		console.log('DELETE /room/:memberId');
+		var RoomModel = require('../database/schema/room');
+		let result = await RoomModel.deleteRoom(req, res);
+    if (result == true) {
+      res.json({
+        statusCode: '200',
+        statusMsg: 'success',
+			  total: '1'
+      });
+    } else {
+      res.json({
+        statusCode: '200',
+        statusMsg: 'success',
+			  total: '0'
+      });
+    }
 	})
-
 
 	app.get('/room/list/:keyword', function(req, res) {
 		console.log('GET /room/list/:keyword');
@@ -117,7 +114,7 @@
 			statusCode: '200',
 			statusMsg: 'success',
 			total: '2',
-			resultList: [{
+			resultItems: [{
 				roomId: '_id1',
 				title: 'dlgmlals',
 				ageMin: '30',
@@ -147,7 +144,7 @@
 			statusCode: '200',
 			statusMsg: 'success',
 			total: '2',
-			resultList: [
+			resultItems: [
 		    {
 				  memberId: 'dlgmlals3'
 			  },
@@ -174,13 +171,13 @@
 			statusCode: '200',
 			statusMsg: 'success',
 			total: '1',
-			resultList: [{
+			resultItems: [{
 				memberId: res.memberId,
 				title: res.title,
 				ageMin: res.ageMin,
 				ageMax: res.ageMax,
 				regDate: res.regDate,
-				place: res.place,
+				region: res.region,
 				gender: res.gender,
 				price: res.price,
 				openUrl: res.openUrl,
@@ -204,7 +201,7 @@
 		res.json({
 			statusCode: '200',
 			statusMsg: 'success',
-			resultList : request
+			resultItems : request
 		});
 	});
 
@@ -215,7 +212,7 @@
 		res.json({
 			statusCode: '200',
 			statusMsg: 'success',
-	//		resultList : request
+	//		resultItems : request
 		});
 	});
 
@@ -227,10 +224,10 @@
 		res.json({
 			statusCode: '200',
 			statusMsg: 'success',
-			resultList : result
+			resultItems : result
 		});
 	});
-
+// dlgmlals3 what is this? ???
 	function castBody(req) {
 		var temp = {};
 	  temp = JSON.stringify(req.body);
@@ -243,7 +240,7 @@
 	  var temp = {};
 	  temp = JSON.stringify(req.params);
 	  var result = {params:''};
-	  jresult.params = JSON.parse(temp.replace(/\:\"(\d+)\"([,\}])/g, '\:$1$2'));
+	  result.params = JSON.parse(temp.replace(/\:\"(\d+)\"([,\}])/g, '\:$1$2'));
 	  return result;
   }
 }
