@@ -1,7 +1,14 @@
 ﻿module.exports = function(app) {
-  /* dlgmlals3 total data process TODO */
+  /* Create Room */
+	app.post('/room', function(req, res) {
+		console.log('POST /room');
+		var RoomModel = require('../database/schema/room');
+		RoomModel.insertRoom(req, res);
+	});
+
+  /* get Room List */
 	app.get('/room', async function(req, res) {
-		console.log('GET /room call router');
+		console.log('GET /room');
    	var RoomModel = require('../database/schema/room');
 		let resultRows = await RoomModel.getRoomList();
 		if (resultRows != null) {
@@ -19,94 +26,31 @@
     });
 	});
 
-	app.post('/room', function(req, res) {
-		console.log('POST /room');
-		var RoomModel = require('../database/schema/room');
-		var bodyReq = castBody(req);
-
-		console.log(bodyReq);
-		RoomModel.insertRoom(bodyReq);
-		res.json ({
-			statusCode: '200',
-			statusMsg: 'success'
-		});
-	});
-
+	/* get Room */
 	app.get('/room/:memberId', async function(req, res) {
 		console.log('GET /room/:memberId');
   	var RoomModel = require('../database/schema/room');
 		var result = await RoomModel.getRoomElement(req, res);
-	  if (result == true) {
-      res.json({
-        statusCode: '200',
-        statusMsg: 'success',
-        total: '1',
-        resultItem: {
-          memberId: res.memberId,
-          title: res.title,
-          ageMin: res.ageMin,
-          ageMax: res.ageMax,
-          regDate: res.regDate,
-          region: res.region,
-          gender: res.gender,
-          price: res.price,
-          openUrl: res.openUrl,
-          intro: res.intro,
-          maxMemberNum:res.maxMemberNum,
-          registDate: res.registDate
-        }
-      });
-		} else { 
-      res.json({
-        statusCode: '200',
-        statusMsg: 'success',
-        total: '0'
-      });
-		}
 	})
 
+  /* update room */
 	app.put('/room/:memberId', async function(req, res) {
 		console.log('PUT /room/:memberId');
 		var RoomModel = require('../database/schema/room');
-		var reqBody = castBody(req);
-		var reqParam = castParam(req);
-
-		var result = RoomModel.updateRoom(reqParam, reqBody);
-    if (result == true) {
-      res.json({
-			  statusCode: '200',
-			  statusMsg: 'success',
-        total: '1'
-		  });
-    } else {
-      res.json({
-			  statusCode: '200',
-			  statusMsg: 'success',
-        total: '0'
-		  });
-    }
+		await RoomModel.updateRoom(req, res);
 	})
 
+  /* delete room */
 	app.delete('/room/:memberId', async function(req, res) {
 		console.log('DELETE /room/:memberId');
 		var RoomModel = require('../database/schema/room');
-		let result = await RoomModel.deleteRoom(req, res);
-    if (result == true) {
-      res.json({
-        statusCode: '200',
-        statusMsg: 'success',
-			  total: '1'
-      });
-    } else {
-      res.json({
-        statusCode: '200',
-        statusMsg: 'success',
-			  total: '0'
-      });
-    }
+		await RoomModel.deleteRoom(req, res);
 	})
 
+
+/* TODO */
 	app.get('/room/list/:keyword', function(req, res) {
+	/*
 		console.log('GET /room/list/:keyword');
 		var keyword = req.query.keyword;
 
@@ -136,10 +80,11 @@
 				}
 			]
 		});
-
+		*/
 	});
 
 	app.get('/member/requester-room/:roomId', function(req, res) {
+  /*
 		res.json({
 			statusCode: '200',
 			statusMsg: 'success',
@@ -153,16 +98,20 @@
 				}
 			]
 		});
+		*/
 	});
 
 	app.post('/room/requester-room', function(req, res) {
+	/*
 		res.json({
 			statusCode: '200',
 			statusMsg: 'success'
 		});
+	*/
 	});
 
 	app.get('/room/apply-room/:memberId', async function(req, res) {
+	/*
 		console.log("apply-room myId : " + req.params.memberId);
 		var RoomModel = require('../database/schema/room');
 		await RoomModel.getRoomElement(req, res);
@@ -186,26 +135,32 @@
 				registDate: res.registDate
 			}]
 		});
+		*/
 	});
 
 	app.delete('/room/requester-room/:memberId', function(req, res) {
+  	/*
 		res.json({
 			statusCode: '200',
 			statusMsg: 'success'
 		});
+		*/
 	});
 
 	app.post('/member',function(req,res){
 		console.log('POST /member');
+		/*
 		var request = req.body.userId;
 		res.json({
 			statusCode: '200',
 			statusMsg: 'success',
 			resultItems : request
 		});
+		*/
 	});
 
 	app.get('/getUserinfo/:userId', function(req, res) {
+	/*
 		console.log('GET /getUserInfo' + req);
 		var request = req.params.userId;
 
@@ -214,10 +169,12 @@
 			statusMsg: 'success',
 	//		resultItems : request
 		});
+		*/
 	});
 
 	app.get('/room/isExistMyroom/:memberId', async function(req, res) {
 		console.log('GET /room/isExistMyroom');
+		/*
 		var RoomModel = await require('../database/schema/room');
 		var result = await RoomModel.existRoom(req);
 
@@ -226,8 +183,18 @@
 			statusMsg: 'success',
 			resultItems : result
 		});
+		*/
 	});
-// dlgmlals3 what is this? ???
+}
+
+
+
+
+
+
+
+
+/*
 	function castBody(req) {
 		var temp = {};
 	  temp = JSON.stringify(req.body);
@@ -243,4 +210,4 @@
 	  result.params = JSON.parse(temp.replace(/\:\"(\d+)\"([,\}])/g, '\:$1$2'));
 	  return result;
   }
-}
+	*/

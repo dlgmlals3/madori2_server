@@ -4,7 +4,7 @@ var MemberModel = require('./memberSchema');
 
 var roomSchema = mongoose.Schema({
   /*dlgmlals3 TODO Insert PK 해서 중복 데이터 안되게 */
-  memberId: {type:String, required:true},
+  memberId: {type:String, required:true, unique:true},
 	title: {type:String, required:true},
 	ageMin: {type:Number,default:20},
 	ageMax: {type:Number,default:30},
@@ -20,25 +20,8 @@ var roomSchema = mongoose.Schema({
 	//createrId: {type:mongoose.Schema.Types.ObjectId, ref: 'member'},
 	//memberId: [{type:mongoose.Schema.Types.ObjectId, ref: 'member'}]
 });
-/*
-	memberSchema.statics.findRoomId= async function(req,res){
-		console.log('find... Room Id');
-		var room = await this.findOne({
-			'roomId':req.body.roomId
-		});
-		console.log(req.body.roomId);
-		var result;
-		if(!member){
-			console.log('room not found');
-		}else{
 
-			result = room._id;
-
-		}
-		return result;
-	}
-*/
-
+/* Create Room */
 roomSchema.statics.insertRoom = async function(req, res) {
 	roomObj = new this({
     memberId: req.body.memberId,
@@ -55,9 +38,155 @@ roomSchema.statics.insertRoom = async function(req, res) {
 		registDate: req.body.registDate,
 		createrId: req.body.createrId
 	});
-	let result = await roomObj.save({
-		//returnResult(err, res);
-	});
+	var result = await roomObj.save(function (err, savedObj) {
+	  if (err) {
+			console.log('insertRoom error' + err);
+			res.json ({
+				statusCode: '500',
+				statusMsg: err,
+      	total: '0'
+			});
+		} else if (!savedObj) {
+			console.log('insertRoom error' + err);
+			res.json ({
+				statusCode: '500',
+				statusMsg: err,
+      	total: '0'
+			});
+		} else {
+			res.json ({
+				statusCode: '200',
+				statusMsg: 'success',
+      	total: '1'
+			});
+			console.log('Success save !!!!!!!!');
+			console.log('Save obj : ' + savedObj);
+		}
+	})
+}
+
+/* get Room */
+roomSchema.statics.getRoomElement = async function(req, res) {
+	console.log("getRoomElement roomId : " + req.params.memberId);
+	await this.findOne (
+		{"memberId": req.params.memberId}, function(err, obj) {
+			if (err) {
+				console.log('getRoomElement err : ' + err);
+				res.json({
+      		statusCode: '500',
+      		statusMsg: err,
+      		total: '0'
+    		});
+			} else if (!obj) {
+				console.log('room not found');
+    		res.json({
+      		statusCode: '200',
+      		statusMsg: 'room not found',
+      		total: '0'
+    		});
+			} else {
+				console.log('room found success : ' + obj);
+					res.json({
+					  statusCode: '200',
+						statusMsg: 'success',
+						total: '1',
+						resultItem: {
+							memberId: obj.memberId,
+							title: obj.title,
+							ageMin: obj.ageMin,
+							ageMax: obj.ageMax,
+							regDate: obj.regDate,
+							region: obj.region,
+							gender: obj.gender,
+							price: obj.price,
+							openUrl: obj.openUrl,
+							intro: obj.intro,
+							maxMemberNum:obj.maxMemberNum,
+							registDate: obj.registDate
+						}
+				 });
+		 }
+ 	});
+}
+
+/* Update Room */
+roomSchema.statics.updateRoom = async function(req, res) {
+	console.log("updateRoom memberId : " + req.params.memberId);
+  await this.findOneAndUpdate(
+    {memberId : req.params.memberId},
+		{$set : 
+		  {
+				title : req.body.title,
+				ageMin: req.body.ageMin,
+				ageMax: req.body.ageMax,
+				regDate: req.body.regDate,
+				region: req.body.region,
+				gender: req.body.gender,
+				price: req.body.price,
+				openUrl: req.body.openUrl,
+				intro: req.body.intro,
+				maxMemberNum: req.body.maxMemberNum,
+				registDate: req.body.registDate
+		  }
+		},
+	  function (err, obj) {
+			console.log('test code req : ' + req.body.title);
+			if (err) {
+				console.log('updateRoom error' + err);
+				res.json ({
+					statusCode: '500',
+	  			statusMsg: err,
+        	total: '0'
+		   	});
+		  } else if (!obj) {
+			  console.log('updateRoom error' + err);
+			  res.json ({
+				  statusCode: '500',
+				  statusMsg: err,
+      	  total: '0'
+			  });
+		  } else {
+			  res.json ({
+				  statusCode: '200',
+				  statusMsg: 'success',
+      	  total: '0'
+			  });
+			  console.log('Success update !!!!!!!!');
+			  console.log('update before obj : ' + obj);
+		  }
+		});
+}
+
+/* delete Room */
+roomSchema.statics.deleteRoom = async function(req, res) {
+	console.log("deleteRoom : " + req.params.memberId);
+	var room = await this.findOneAndDelete(
+	  {'memberId': req.params.memberId},
+		function (err, obj) {
+			if (err) {
+				console.log('deleteRoom error' + err);
+				res.json ({
+					statusCode: '500',
+	  			statusMsg: err,
+        	total: '0'
+		   	});
+		  } else if (!obj) {
+			  console.log('deleteRoom error' + err);
+			  res.json ({
+				  statusCode: '500',
+				  statusMsg: err,
+      	  total: '0'
+			  });
+		  } else {
+			  res.json ({
+				  statusCode: '200',
+				  statusMsg: 'success',
+      	  total: '0'
+			  });
+			  console.log('Success delete !!!!!!!!');
+			  console.log('delete obj : ' + obj);
+		  }
+  });
 }
 
 roomSchema.statics.getRoomList = async function() {
@@ -65,81 +194,12 @@ roomSchema.statics.getRoomList = async function() {
 	return resultFind;
 }
 
-var getRoomCount = function() {
-	return 30; // after is modified...
-}
-
 roomSchema.statics.deleteAllRoom = async function() {
 	let result = await this.remove({});
 }
 
-roomSchema.statics.updateRoom = async function(reqParam, reqBody) {
-	console.log("updateRoom memberId : " + reqParam.params.memberId);
-	var room = await this.findOne ({
-    "memberId" : reqParam.params.memberId
-  });
-	console.log("room : " + room);
-
-	if (!room) {
-		console.log('room not found');
-		return false;
-	} else {
-  	let resultUpdate = await room.update (
-       { memberId : reqParam.params.memberId },
-       { set : reqBody.body });
-    return true;
-  }
-/*
-	this.update({roomId:req.params.roomId}, {&set:req:body},function(err,output){
-		if(err) res.status(500).json({error:'database failure'});
-		console.log("update output : " + output);
-		if(!output.n) return res.status(404).json({error: 'book not found'});
-		})
-  result = await room.save();
-*/	
-}
-
-roomSchema.statics.getRoomElement = async function(req, res) {
-	console.log("find req roomId : " + req.params.memberId);
-
-	var room = await this.findOne({
-		"memberId": req.params.memberId
-	});
-
-	if (!room) {
-		console.log('room not found');
-    return false;
-	} else {
-		console.log('room found : ' + room.memberId);
-    if (room.memberId) res.memberId = room.memberId;
-    if (room.title) res.title = room.title;
-    if (room.ageMin) res.ageMin = room.ageMin;
-    if (room.ageMax) res.ageMax = room.ageMax;
-    if (room.regDate) res.regDate = room.regDate;
-    if (room.region) res.region = room.region;
-    if (room.gender) res.gender = room.gender;
-    if (room.price) res.price = room.price;
-    if (room.openUrl) res.openUrl = room.openUrl;
-    if (room.intro) res.intro = room.intro;
-    if (room.registDate) res.registDate = room.registDate;
-    if (room.maxMemberNum) res.maxMemberNum = room.maxMemberNum;
-    return true;
-	}
-}
-
-roomSchema.statics.deleteRoom = async function(req, res) {
-	console.log("deleteRoom : " + req.params.memberId);
-	var room = await this.findOne({
-		'memberId': req.params.memberId
-	});
-	if (!room) {
-		console.log('room not found');
-		return false;
-	} else {
-    console.log("room found title : " + room.title);
-    await room.remove();
-    return true;
-  }
+var getRoomCount = function() {
+	return 30; // after is modified...
 }
 
 roomSchema.statics.existRoom = async function(req,res){
@@ -187,15 +247,12 @@ roomSchema.plugin(autoIncrement.plugin, {
 	startAt: 1
 });
 module.exports = mongoose.model('rooms', roomSchema);
+
 /*
-var returnResult = function(err, res) {
-	if (err) {
-		res.status(500).send({
-			error: 'database failure'
-		});
-	}
-	*/
-/*res.json({
-	statusCode: '200',
-	statusMsg: 'success'
-});*/
+	this.update({roomId:req.params.roomId}, {&set:req:body},function(err,output){
+		if(err) res.status(500).json({error:'database failure'});
+		console.log("update output : " + output);
+		if(!output.n) return res.status(404).json({error: 'book not found'});
+		})
+  result = await room.save();
+*/	
