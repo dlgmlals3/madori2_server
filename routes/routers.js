@@ -34,14 +34,17 @@
 		await RoomModel.getRoomList(req, res);
 	});
 
+	/* Search */
 	app.get('/room/search/:keyword', async function(req, res) {
 		console.log('GET /room get roomList');
 		var RoomModel = require('../database/schema/room');
 		await RoomModel.getRoomSearch(req, res);
 	});
 
-	app.get('/member/requester-room/:roomId', function(req, res) {
-  /*
+	/* 내 방에 신청한 사람 보기 */
+  app.get('/room/applyRoom/:memberId', async function(req, res) { 
+		/* TODO */
+	  console.log("get /room/applyRoom show requested member:" + req.params.memberId);
 		res.json({
 			statusCode: '200',
 			statusMsg: 'success',
@@ -55,21 +58,26 @@
 				}
 			]
 		});
-		*/
 	});
 
-	app.post('/room/requester-room', function(req, res) {
-	/*
-		res.json({
-			statusCode: '200',
-			statusMsg: 'success'
-		});
-	*/
+	app.post('/room/applyRoom', async function(req, res) { 
+		/* TODO */
+	  console.log("post /room/applyRoom register apply room"); 
+	  console.log("RoomMaker Id : " + req.body.memberId + "reuqest ID : " + 
+			req.body.requestMemberId);
 	});
 
-	app.get('/room/apply-room/:memberId', async function(req, res) {
-	/*
-		console.log("apply-room myId : " + req.params.memberId);
+	app.delete('/room/applyRoom', async function(req, res) { 
+		/* TODO */
+	  console.log("delete /room/applyRoom"); 
+	  console.log("RoomMaker Id : " + req.body.memberId + "reuqest ID : " + 
+			req.body.requestMemberId);
+	});
+
+	/* 멤버는 자신이 신청한 방장의 멤버아이디를 가지고 있어야함 */
+	/* 내가 신청한 방보기 */
+	app.get('/room/applyRoom/:memberId', async function(req, res) { 
+	  console.log("appliedRoom myId : " + req.params.memberId);
 		var RoomModel = require('../database/schema/room');
 		await RoomModel.getRoomElement(req, res);
 
@@ -92,79 +100,6 @@
 				registDate: res.registDate
 			}]
 		});
-		*/
-	});
-
-	app.delete('/room/requester-room/:memberId', function(req, res) {
-  	/*
-		res.json({
-			statusCode: '200',
-			statusMsg: 'success'
-		});
-		*/
-	});
-
-	app.post('/member',function(req,res){
-		console.log('POST /member');
-		/*
-		var request = req.body.userId;
-		res.json({
-			statusCode: '200',
-			statusMsg: 'success',
-			resultItems : request
-		});
-		*/
-	});
-
-	app.get('/getUserinfo/:userId', function(req, res) {
-	/*
-		console.log('GET /getUserInfo' + req);
-		var request = req.params.userId;
-
-		res.json({
-			statusCode: '200',
-			statusMsg: 'success',
-	//		resultItems : request
-		});
-		*/
-	});
-
-	app.get('/room/isExistMyroom/:memberId', async function(req, res) {
-		console.log('GET /room/isExistMyroom');
-		/*
-		var RoomModel = await require('../database/schema/room');
-		var result = await RoomModel.existRoom(req);
-
-		res.json({
-			statusCode: '200',
-			statusMsg: 'success',
-			resultItems : result
-		});
-		*/
 	});
 }
 
-
-
-
-
-
-
-
-/*
-	function castBody(req) {
-		var temp = {};
-	  temp = JSON.stringify(req.body);
-	  var result = {body: ''};
-	  result.body = JSON.parse(temp.replace(/\:\"(\d+)\"([,\}])/g, '\:$1$2'));
-	  return result;
-	}
-
-  function castParam(req) {
-	  var temp = {};
-	  temp = JSON.stringify(req.params);
-	  var result = {params:''};
-	  result.params = JSON.parse(temp.replace(/\:\"(\d+)\"([,\}])/g, '\:$1$2'));
-	  return result;
-  }
-	*/
