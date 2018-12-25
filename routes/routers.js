@@ -1,29 +1,9 @@
 ﻿module.exports = function(app) {
   /* Create Room */
 	app.post('/room', function(req, res) {
-		console.log('POST /room');
+		console.log('POST /room make room');
 		var RoomModel = require('../database/schema/room');
 		RoomModel.insertRoom(req, res);
-	});
-
-  /* get Room List */
-	app.get('/room', async function(req, res) {
-		console.log('GET /room');
-   	var RoomModel = require('../database/schema/room');
-		let resultRows = await RoomModel.getRoomList();
-		if (resultRows != null) {
-			resultStatus = 'success';
-		}
-
-		let pageCount = resultRows.length;
-
-		console.log("result : " + pageCount);
-		res.json ({
-      statusCode: '200',
-      statusMsg: resultStatus,
-      total: pageCount,
-      resultItems: resultRows
-    });
 	});
 
 	/* get Room */
@@ -47,40 +27,17 @@
 		await RoomModel.deleteRoom(req, res);
 	})
 
+ /* get Room List plus searching */
+	app.get('/room', async function(req, res) {
+		console.log('GET /room get roomList');
+		var RoomModel = require('../database/schema/room');
+		await RoomModel.getRoomList(req, res);
+	});
 
-/* TODO */
-	app.get('/room/list/:keyword', function(req, res) {
-	/*
-		console.log('GET /room/list/:keyword');
-		var keyword = req.query.keyword;
-
-		res.json({
-			statusCode: '200',
-			statusMsg: 'success',
-			total: '2',
-			resultItems: [{
-				roomId: '_id1',
-				title: 'dlgmlals',
-				ageMin: '30',
-				ageMax: '40',
-				gender: 'm',
-				price: '50000',
-				openUrl: 'asdfasdf',
-				intro: '123213'
-			},
-				{
-					roomId: '_id2',
-					title: 'gjrbdnjs',
-					ageMin: '30',
-					ageMax: '40',
-					gender: 'm',
-					price: '50000',
-					openUrl: 'asdfasdf',
-					intro: '123213'
-				}
-			]
-		});
-		*/
+	app.get('/room/search/:keyword', async function(req, res) {
+		console.log('GET /room get roomList');
+		var RoomModel = require('../database/schema/room');
+		await RoomModel.getRoomSearch(req, res);
 	});
 
 	app.get('/member/requester-room/:roomId', function(req, res) {

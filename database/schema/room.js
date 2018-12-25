@@ -3,7 +3,6 @@ var autoIncrement = require('mongoose-auto-increment');
 var MemberModel = require('./memberSchema');
 
 var roomSchema = mongoose.Schema({
-  /*dlgmlals3 TODO Insert PK 해서 중복 데이터 안되게 */
   memberId: {type:String, required:true, unique:true},
 	title: {type:String, required:true},
 	ageMin: {type:Number,default:20},
@@ -67,7 +66,7 @@ roomSchema.statics.insertRoom = async function(req, res) {
 
 /* get Room */
 roomSchema.statics.getRoomElement = async function(req, res) {
-	console.log("getRoomElement roomId : " + req.params.memberId);
+	console.log("getRoomElement memberId : " + req.params.memberId);
 	await this.findOne (
 		{"memberId": req.params.memberId}, function(err, obj) {
 			if (err) {
@@ -189,9 +188,31 @@ roomSchema.statics.deleteRoom = async function(req, res) {
   });
 }
 
-roomSchema.statics.getRoomList = async function() {
-	let resultFind = await this.find({}).limit(getRoomCount());
-	return resultFind;
+roomSchema.statics.getRoomList = async function(req, res) {
+	await this.find({},
+	function(err, obj) {
+	  res.json({
+	 		statusCode: '200',
+	 		statusMsg: 'success',
+	   	total: obj.length,
+	   	resultItems:obj 
+	 	});
+	});
+}
+/* TODO : find all data */
+roomSchema.statics.getRoomSearch = async function(req, res) {
+	console.log('search keyword : ' + req.params.keyword);
+  console.log("keyword is exist");
+  await this.find(
+  {"title": req.params.keyword },
+  function(err, obj) {
+	  res.json({
+ 		  statusCode: '200',
+ 		  statusMsg: 'success',
+      total: obj.length,
+      resultItems:obj 
+    });
+  });
 }
 
 roomSchema.statics.deleteAllRoom = async function() {
