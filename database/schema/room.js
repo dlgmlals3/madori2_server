@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 var autoIncrement = require('mongoose-auto-increment');
-var MemberModel = require('./memberSchema');
+var MemberModel = require('./member');
 
 var roomSchema = mongoose.Schema({
   memberId: {type:String, required:true, unique:true},
@@ -58,7 +58,6 @@ roomSchema.statics.insertRoom = async function(req, res) {
 				statusMsg: 'success',
       	total: '1'
 			});
-			console.log('Success save !!!!!!!!');
 			console.log('Save obj : ' + savedObj);
 		}
 	})
@@ -150,7 +149,6 @@ roomSchema.statics.updateRoom = async function(req, res) {
 				  statusMsg: 'success',
       	  total: '0'
 			  });
-			  console.log('Success update !!!!!!!!');
 			  console.log('update before obj : ' + obj);
 		  }
 		});
@@ -182,7 +180,6 @@ roomSchema.statics.deleteRoom = async function(req, res) {
 				  statusMsg: 'success',
       	  total: '0'
 			  });
-			  console.log('Success delete !!!!!!!!');
 			  console.log('delete obj : ' + obj);
 		  }
   });
@@ -199,6 +196,24 @@ roomSchema.statics.getRoomList = async function(req, res) {
 	 	});
 	});
 }
+
+/* get RoomId */
+roomSchema.statics.getRoomId = async function(memberId) {
+  var roomId;
+	console.log("getRoomId memberId : " + memberId);
+	await this.findOne (
+		{"memberId": memberId}, function(err, obj) {
+			if (err) {
+				console.log('getRoomElement err : ' + err);
+			} else if (!obj) {
+				console.log('room not found');
+			} else {
+			  roomId = obj._id;	
+		 }
+ 	});
+	return roomId;
+}
+
 /* TODO : find all data */
 roomSchema.statics.getRoomSearch = async function(req, res) {
 	console.log('search keyword : ' + req.params.keyword);
@@ -240,7 +255,7 @@ roomSchema.statics.existRoom = async function(req,res){
 	}
 	return result;
 }
-
+/*
 roomSchema.statics.joinRoom = async function(req,res){
 	console.log('join... room');
 
@@ -260,7 +275,7 @@ roomSchema.statics.joinRoom = async function(req,res){
 		result = await room.save();
 	}
 }
-
+*/
 autoIncrement.initialize(mongoose.connection);
 roomSchema.plugin(autoIncrement.plugin, {
 	model: 'rooms',
@@ -268,12 +283,3 @@ roomSchema.plugin(autoIncrement.plugin, {
 	startAt: 1
 });
 module.exports = mongoose.model('rooms', roomSchema);
-
-/*
-	this.update({roomId:req.params.roomId}, {&set:req:body},function(err,output){
-		if(err) res.status(500).json({error:'database failure'});
-		console.log("update output : " + output);
-		if(!output.n) return res.status(404).json({error: 'book not found'});
-		})
-  result = await room.save();
-*/	
