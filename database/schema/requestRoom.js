@@ -1,19 +1,21 @@
 var mongoose = require('mongoose');
 var autoIncrement = require('mongoose-auto-increment');
+var roomModel = require('./room');
 
 var requestRoomSchema = mongoose.Schema({
 		memberId : {type:String,required:true},
-		roomId:{type:mongoose.Schema.Types.ObjectId,ref:'room'},
+		roomId:{type:mongoose.Schema.Types.ObjectId, ref: 'rooms'},
 		requestStatus : {type:String,required:true}
 });
 requestRoomSchema.index({'memberId':1, 'roomId':1, 'requestStatus':1}, {unique: true});
 
-requestRoomSchema.statics.insertRequest = async function(req, roomObjId, status, res) {
+requestRoomSchema.statics.insertRequest = async function(requestMemberId, roomObjId, status, res) {
 	requestObj = new this({
-		memberId:req.body.requestMemberId,
+		memberId:requestMemberId,
 		roomId:roomObjId,
 		requestStatus:status
 	});
+
 	var result = await requestObj.save(function (err, savedObj) {
 	  if (err) {
 			console.log('insertRequest error' + err);
@@ -41,9 +43,8 @@ requestRoomSchema.statics.insertRequest = async function(req, roomObjId, status,
 }
 
 requestRoomSchema.statics.getRequest = async function(roomObjId, res){
-	console.log("getRequest RoomId : " + roomObjId);
   await this.find (
-		{"roomId": roomObjId, "requestStatus": "request"}, function(err, obj) {
+		{"roomId": roomObjId}, function(err, obj) {
 			if (err) {
 				console.log('getRequest err : ' + err);
 				res.json({
@@ -71,12 +72,13 @@ requestRoomSchema.statics.getRequest = async function(roomObjId, res){
 }
 
 requestRoomSchema.statics.updateRequest = async function(req, res) {
-	console.log("updateRequest memberId : " + req.params.memberId);
   await this.findOneAndUpdate(
-    {memberId : req.params.memberId},
+    {memberId : req.body.requestMemberId,
+     roomId : req.body.roomId,
+		},
 		{$set : 
 		  {
-				requestStatus : "approved"
+				requestStatus : req.body.requestStatus
 		  }
 		},
 	  function (err, obj) {
@@ -105,9 +107,9 @@ requestRoomSchema.statics.updateRequest = async function(req, res) {
 }
 
 requestRoomSchema.statics.deleteRequest = async function(req, res) {
-	console.log("deleteRequest : " + req.params.memberId);
 	var room = await this.findOneAndDelete(
-	  {'memberId': req.params.memberId},
+	  {'memberId': req.params.requestMemberId,
+		 'roomId': req.params.roomId},
 		function (err, obj) {
 			if (err) {
 				console.log('deleteRoom error' + err);
@@ -136,10 +138,11 @@ requestRoomSchema.statics.deleteRequest = async function(req, res) {
 
 requestRoomSchema.statics.getMyRequestInfo = async function(req, res) {
 	console.log("getMyRequestInfo : " + req.params.memberId);
+
   await this.find (
-		{"roomId": roomObjId,
-		 "requestStatus": "request"
-		}).populate('roomId', '').exec((err, data) => {
+		{"memberId": req.params.memberId,
+		 "requestStatus": "10"
+		}).populate('roomId').exec((err, data) => {
 			if (err) {
 				console.log('getMyRequest err : ' + err);
 				res.json({
@@ -147,7 +150,7 @@ requestRoomSchema.statics.getMyRequestInfo = async function(req, res) {
       		statusMsg: err,
       		total: '0'
     		});
-			} else if (!obj) {
+			} else if (!data) {
 				console.log('getMyRequest not found');
     		res.json({
       		statusCode: '200',
@@ -155,15 +158,15 @@ requestRoomSchema.statics.getMyRequestInfo = async function(req, res) {
       		total: '0'
     		});
 			} else {
-				console.log('getMyRequest found success : ' + obj);
-					res.json({
-					  statusCode: '200',
-						statusMsg: 'success',
-						total: obj.length,
-						resultItems:obj
-				 });
+				console.log('getMyRequest found success : ' + data);
+				res.json({
+				  statusCode: '200',
+					statusMsg: 'success',
+					total: data.length,
+					resultItems:data
+			  });
+	    	console.log('data : ' + data);
 		  }
-	    console.log('data : ' + data);
 		});
 }
 
