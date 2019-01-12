@@ -135,9 +135,36 @@ requestRoomSchema.statics.deleteRequest = async function(req, res) {
 }
 
 requestRoomSchema.statics.getMyRequestInfo = async function(req, res) {
- 	// _id-room and roomID-request join
-	// memberID search in memberID-request .....
-	// res have it...
+	console.log("getMyRequestInfo : " + req.params.memberId);
+  await this.find (
+		{"roomId": roomObjId,
+		 "requestStatus": "request"
+		}).populate('roomId', '').exec((err, data) => {
+			if (err) {
+				console.log('getMyRequest err : ' + err);
+				res.json({
+      		statusCode: '500',
+      		statusMsg: err,
+      		total: '0'
+    		});
+			} else if (!obj) {
+				console.log('getMyRequest not found');
+    		res.json({
+      		statusCode: '200',
+      		statusMsg: 'room not found',
+      		total: '0'
+    		});
+			} else {
+				console.log('getMyRequest found success : ' + obj);
+					res.json({
+					  statusCode: '200',
+						statusMsg: 'success',
+						total: obj.length,
+						resultItems:obj
+				 });
+		  }
+	    console.log('data : ' + data);
+		});
 }
 
 /*
