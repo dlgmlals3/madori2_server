@@ -186,14 +186,30 @@ roomSchema.statics.deleteRoom = async function(req, res) {
 }
 
 roomSchema.statics.getRoomList = async function(req, res) {
-	await this.find({},
-	function(err, obj) {
-	  res.json({
-	 		statusCode: '200',
-	 		statusMsg: 'success',
-	   	total: obj.length,
-	   	resultItems:obj 
-	 	});
+  console.log('getRoomList order by rgistDate....');
+	await this.find({}).sort({registDate: 'desc'}).exec(function(err, obj) {
+		if (err) {
+			console.log('getRoomList err : ' + err);
+		  res.json ({
+			  statusCode: '500',
+			  statusMsg: err,
+     	  total: '0'
+		  });
+		} else if (!obj) {
+			console.log('room not found');
+		  res.json ({
+			  statusCode: '500',
+			  statusMsg: 'success',
+     	  total: '0'
+		  });
+		} else {
+  	  res.json({
+  	 		statusCode: '200',
+  	 		statusMsg: 'success',
+  	   	total: obj.length,
+  	   	resultItems:obj 
+  		});
+	  }
 	});
 }
 
@@ -209,7 +225,7 @@ roomSchema.statics.getRoomId = async function(memberId) {
 				console.log('room not found');
 			} else {
 			  roomId = obj._id;	
-		 }
+		  }
  	});
 	return roomId;
 }
@@ -255,27 +271,7 @@ roomSchema.statics.existRoom = async function(req,res){
 	}
 	return result;
 }
-/*
-roomSchema.statics.joinRoom = async function(req,res){
-	console.log('join... room');
 
-	var room = await this.findOne({
-		'roomId':req.body.roomId
-	});
-	console.log('room :'+ room);
-	var result;
-	if(!room){
-		console.log('room not found');
-		result = false;
-	}else{
-		console.log('join successes');
-		console.log('mememeberId' + req.body.memberId);
-		room.memberId.push(req.body.memberId);
-		console.log('room status : '+ room.memberId);
-		result = await room.save();
-	}
-}
-*/
 autoIncrement.initialize(mongoose.connection);
 roomSchema.plugin(autoIncrement.plugin, {
 	model: 'rooms',

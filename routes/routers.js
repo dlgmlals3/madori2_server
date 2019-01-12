@@ -87,12 +87,11 @@
 		await requestModel.deleteRequest(req, res);
 	});
 
-	/* 내가 신청한 방보기 only R */
 	app.get('/room/myApplyInfo/:memberId', async function(req, res) { 
 	  console.log("my apply Room myId : " + req.params.memberId);
 		console.log('GET /room get roomList');
 		var RoomModel = require('../database/schema/room');
-		await RoomModel.getRoomList(req, res);
+		//await requestModel.getMyRequestInfo(req, res);
 	});
 }
 
