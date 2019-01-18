@@ -1,97 +1,106 @@
 ﻿module.exports = function(app) {
-  /* Create Room */
-	app.post('/room', function(req, res) {
-		console.log('POST /room make room');
-		var RoomModel = require('../database/schema/room');
-		RoomModel.insertRoom(req, res);
-	});
+				/* Create Room */
+				app.post('/room', function(req, res) {
+												console.log('POST /room make room');
+												var RoomModel = require('../database/schema/room');
+												RoomModel.insertRoom(req, res);
+												});
 
-	/* get Room */
-	app.get('/room/:memberId', async function(req, res) {
-		console.log('GET /room/:memberId');
-  	var RoomModel = require('../database/schema/room');
-		var result = await RoomModel.getRoomElement(req, res);
-	})
+				/* get Room */
+				app.get('/room/:memberId', async function(req, res) {
+												console.log('GET /room/:memberId');
+												var RoomModel = require('../database/schema/room');
+												var result = await RoomModel.getRoomElement(req, res);
+												});
 
-  /* update room */
-	app.put('/room/:memberId', async function(req, res) {
-		console.log('PUT /room/:memberId');
-		var RoomModel = require('../database/schema/room');
-		await RoomModel.updateRoom(req, res);
-	})
+				/* update room */
+				app.put('/room/:memberId', async function(req, res) {
+												console.log('PUT /room/:memberId');
+												var RoomModel = require('../database/schema/room');
+												await RoomModel.updateRoom(req, res);
+												});
 
-  /* delete room */
-	app.delete('/room/:memberId', async function(req, res) {
-		console.log('DELETE /room/:memberId');
-		var RoomModel = require('../database/schema/room');
-		await RoomModel.deleteRoom(req, res);
-	})
+				/* delete room */
+				app.delete('/room/:memberId', async function(req, res) {
+												console.log('DELETE /room/:memberId');
+												var RoomModel = require('../database/schema/room');
+												await RoomModel.deleteRoom(req, res);
+												});
 
- /* get Room List plus searching */
-	app.get('/room', async function(req, res) {
-		console.log('GET /room get roomList');
-		var RoomModel = require('../database/schema/room');
-		await RoomModel.getRoomList(req, res);
-	});
+				/* get Room List plus searching */
+				app.get('/room', async function(req, res) {
+												console.log('GET /room get roomList');
+												var RoomModel = require('../database/schema/room');
+												await RoomModel.getRoomList(req, res);
+												});
 
-	/* Search */
-	app.get('/room/search/:keyword', async function(req, res) {
-		console.log('GET /room get roomList');
-		var RoomModel = require('../database/schema/room');
-		await RoomModel.getRoomSearch(req, res);
-	});
+				/* Search */
+				app.get('/room/search/:keyword', async function(req, res) {
+												console.log('GET /room get roomList');
+												var RoomModel = require('../database/schema/room');
+												await RoomModel.getRoomSearch(req, res);
+												});
 
-	/* todo */
-	// 2 query is only 1.....
+				/* request to room  CRUD */
+				app.post('/room/applyRoom', async function(req, res) { 
+												var requestModel = require('../database/schema/requestRoom');
+												console.log("post /room/applyRoom register apply room"); 
+												console.log("RoomMaker Id : " + req.body.requestMemberId +
+																",room ID : " +  req.body.roomId + ", Command : 10");
 
-	/* request to room  CRUD */
-	app.post('/room/applyRoom', async function(req, res) { 
-	  console.log("post /room/applyRoom register apply room"); 
-	  console.log("RoomMaker Id : " + req.body.memberId + " reuqest ID : " + 
-			req.body.requestMemberId);
-		// find room id from room using memberID
-		var RoomModel = require('../database/schema/room');
-		var roomId = await RoomModel.getRoomId(req.body.memberId);
-		console.log("room id : " + roomId);
-		// insert requestMemberId, roomId, status = "request"
-		if (roomId) {
-		  var requestModel = require('../database/schema/requestRoom');
-		  requestModel.insertRequest(req, roomId, "request", res);
-		}
-	});
+												if (req.body.requestMemberId == "" || req.body.roomId == "") {
+												console.log("roomId or memberID is nothing!!!!! Error !!!!!!!!");
+												} else {
+												requestModel.insertRequest(req.body.requestMemberId, req.body.roomId, '10', res);
+												}
+												});
 
-  /* get request info to room */
-  app.get('/room/applyRoom/:memberId', async function(req, res) { 
-	  console.log("get /room/applyRoom show requested member:" + req.params.memberId);
-		// find room id from room using memberID
-		var RoomModel = require('../database/schema/room');
-		var roomId = await RoomModel.getRoomId(req.params.memberId);
-	  // get request	
-		if (roomId) {
-		  var requestModel = require('../database/schema/requestRoom');
-		  requestModel.getRequest(roomId, res);
-		}
-	});
+				/* get request info to room */
+				app.get('/room/applyRoom/:roomId', async function(req, res) { 
+												var requestModel = require('../database/schema/requestRoom');
 
-	app.put('/room/applyRoom/:memberId', async function(req, res) {
-		console.log('PUT /room/applyRoom/:memberId');
-		var requestModel = require('../database/schema/requestRoom');
-		await requestModel.updateRequest(req, res);
-	})
+												console.log("get /room/applyRoom roomId:" + req.params.roomId);
+												if (req.params.roomId == "") {
+												console.log("roomid is nothing");
+												} else {
+												requestModel.getRequest(req.params.roomId, res);
+												}
+												});
 
-	app.delete('/room/applyRoom', async function(req, res) { 
-	  console.log("delete /room/applyRoom"); 
-	  console.log("RoomMaker Id : " + req.body.memberId + " reuqest ID : " + 
-			req.body.requestMemberId);
-		var requestModel = require('../database/schema/requestRoom');
-		await requestModel.deleteRequest(req, res);
-	});
+				app.put('/room/applyRoom/status', async function(req, res) {
+												console.log('PUT /room/applyRoom');
+												var requestModel = require('../database/schema/requestRoom');
 
-	app.get('/room/myApplyInfo/:memberId', async function(req, res) { 
-	  console.log("my apply Room myId : " + req.params.memberId);
-		console.log('GET /room get roomList');
-		var RoomModel = require('../database/schema/room');
-		//await requestModel.getMyRequestInfo(req, res);
-	});
+												console.log("updateRequest memberId : " + req.body.requestMemberId);
+												console.log("updateRequest RoomId : " + req.body.roomId);
+												console.log("updateRequest RequestStatus : " + req.body.requestStatus);
+
+												if (req.body.requestMemberId == "" || req.body.roomId == "" ||
+																req.body.requestStatus == "") {
+												console.log('needs item is nothing .. Error ....');
+												} else {
+												await requestModel.updateRequest(req, res);
+												}
+												});
+
+				app.delete('/room/applyRoom/status', async function(req, res) { 
+												var requestModel = require('../database/schema/requestRoom');
+												console.log("delete /room/applyRoom"); 
+												console.log("RoomId : " + req.params.roomId + " reuqest ID : " + 
+																req.params.requestMemberId);
+
+												if (req.params.requestMemberId == "" || req.params.roomId == "") {
+												console.log('needs item is nothing .. Error ....');
+												} else {
+												await requestModel.deleteRequest(req, res);
+												}
+												});
+
+				app.get('/myRequestInfo/:memberId', async function(req, res) {
+					  console.log('get /myRequestInfo');
+						var requestModel = require('../database/schema/requestRoom');
+						//console.log("my apply Room myId : " + req.params.memberId);
+						await requestModel.getMyRequestInfo(req, res);
+				});
 }
 

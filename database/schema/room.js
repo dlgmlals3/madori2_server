@@ -56,7 +56,8 @@ roomSchema.statics.insertRoom = async function(req, res) {
 			res.json ({
 				statusCode: '200',
 				statusMsg: 'success',
-      	total: '1'
+      	total: '1',
+				roomId: savedObj._id
 			});
 			console.log('Save obj : ' + savedObj);
 		}
@@ -89,6 +90,7 @@ roomSchema.statics.getRoomElement = async function(req, res) {
 						statusMsg: 'success',
 						total: '1',
 						resultItem: {
+						  roomId: obj._id,
 							memberId: obj.memberId,
 							title: obj.title,
 							ageMin: obj.ageMin,
@@ -271,11 +273,11 @@ roomSchema.statics.existRoom = async function(req,res){
 	}
 	return result;
 }
-
+/*
 autoIncrement.initialize(mongoose.connection);
 roomSchema.plugin(autoIncrement.plugin, {
 	model: 'rooms',
 	field: 'roomId',
 	startAt: 1
-});
+});*/
 module.exports = mongoose.model('rooms', roomSchema);
