@@ -74,9 +74,10 @@ memberSchema.statics.findMemberId = async function(kakaoId) {
 }
 
 memberSchema.statics.findMember = async function(req,res){
-  console.log('find... Member Id : ' + req.params.kakaoId);
+	console.log('valid Member Id : ' + req.params.memberId);
+ 
   var member = await this.findOne(
-		{'kakaoId':req.params.kakaoId}, function(err, data) { 
+		{'_id':req.params.memberId}, function(err, data) { 
         if (err) {
           console.log('getMember err : ' + err);
           res.json({

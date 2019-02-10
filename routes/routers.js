@@ -7,8 +7,8 @@
   });
 
   /* get member */
-  app.get('/member/:kakaoId', async function(req, res) {
-    console.log('GET /member/:kakaoId');
+  app.get('/member/:memberId', async function(req, res) {
+    console.log('GET /member/:memberId');
     var member = require('../database/schema/member');
     await member.findMember(req, res);
   });
