@@ -7,10 +7,10 @@
   });
 
   /* get member */
-  app.get('/member/:memberId', async function(req, res) {
-    console.log('GET /member/:memberId');
+  app.get('/member/:kakaoId', async function(req, res) {
+    console.log('GET /member/:kakaoId');
     var member = require('../database/schema/member');
-    await member.findMemberId(req, res);
+    await member.findMember(req, res);
   });
 
   /* update member */
