@@ -82,7 +82,7 @@
   app.post('/room/applyRoom', async function(req, res) { 
     var requestModel = require('../database/schema/requestRoom');
     console.log("post /room/applyRoom register apply room"); 
-    console.log("RoomMaker Id : " + req.body.requestMemberId +
+    console.log("requestMemberId : " + req.body.requestMemberId +
       ",room ID : " +  req.body.roomId + ", Command : 10");
 
     if (req.body.requestMemberId == "" || req.body.roomId == "") {
