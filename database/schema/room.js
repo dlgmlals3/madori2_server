@@ -273,11 +273,5 @@ roomSchema.statics.existRoom = async function(req,res){
   }
   return result;
 }
-/*
-   autoIncrement.initialize(mongoose.connection);
-   roomSchema.plugin(autoIncrement.plugin, {
-   model: 'rooms',
-   field: 'roomId',
-   startAt: 1
-   });*/
+
 module.exports = mongoose.model('rooms', roomSchema);
