@@ -5,6 +5,7 @@ var memberSchema = mongoose.Schema({
     kakaoId : {type:String, required:true, unique:true},
     nickName : {type:String, required:true},
     thumbnailImage : {type:String, required:true},
+    profileImage : {type:String, required:true},
     ageRange : {type:String, required:true},
     gender : {type:String, required:true},
 });
@@ -26,6 +27,7 @@ memberSchema.statics.insertMember = async function(req,res) {
 			kakaoId:req.body.kakaoId,
 			nickName:req.body.nickName,
 			thumbnailImage:req.body.thumbnailImage,
+			profileImage : req.body.profileImage,
 			ageRange:req.body.ageRange,
 			gender:req.body.gender
 		});
@@ -111,6 +113,7 @@ memberSchema.statics.updateMember = async function(req, res) {
         {
           nickName : req.body.nickName,
           thumbnailImage: req.body.thumbnailImage,
+				  profileImage : req.body.profileImage,
           ageRange: req.body.ageRange,
           gender: req.body.gender,
         }
