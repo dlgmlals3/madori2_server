@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var autoIncrement = require('mongoose-auto-increment');
-var MemberModel = require('./member');
+var memberModel = require('./member');
+var requestRoomModel = require('./requestRoom');
 
 var roomSchema = mongoose.Schema({
   memberId: {type:String, required:true, unique:true},
@@ -22,6 +23,7 @@ var roomSchema = mongoose.Schema({
 
 /* Create Room */
 roomSchema.statics.insertRoom = async function(req, res) {
+  console.log('insertRoom' + req.body.memberId);
   roomObj = new this({
     memberId: req.body.memberId,
 		title: req.body.title,
@@ -158,6 +160,20 @@ roomSchema.statics.updateRoom = async function(req, res) {
 /* delete Room */
 roomSchema.statics.deleteRoom = async function(req, res) {
   console.log("deleteRoom : " + req.params.memberId);
+  var roomId;
+  await this.findOne ({"memberId": req.params.memberId},
+    function(err, obj) {
+	    if (err) {
+	        console.log('getRoomElement err : ' + err);
+	    } else if (!obj) {
+		    console.log('room not found');
+		} else {
+		    roomId = obj._id;
+		}
+  });
+  console.log('roomId : ',roomId);
+  await requestRoomModel.deleteRequestAboutRoom(roomId);
+
   var room = await this.findOneAndDelete(
       {'memberId': req.params.memberId},
       function (err, obj) {
@@ -184,6 +200,8 @@ roomSchema.statics.deleteRoom = async function(req, res) {
           console.log('delete obj : ' + obj);
         }
       });
+
+    // dlgmlals3
 }
 
 roomSchema.statics.getRoomList = async function(req, res) {
@@ -219,15 +237,15 @@ roomSchema.statics.getRoomList = async function(req, res) {
 roomSchema.statics.getRoomId = async function(memberId) {
   var roomId;
   await this.findOne ({"memberId": memberId},
-			function(err, obj) {
-				 if (err) {
-					 console.log('getRoomElement err : ' + err);
-				 } else if (!obj) {
-					 console.log('room not found');
-				 } else {
-				   roomId = obj._id;	
-				 }
-      });
+        function(err, obj) {
+             if (err) {
+                 console.log('getRoomElement err : ' + err);
+             } else if (!obj) {
+                 console.log('room not found');
+             } else {
+               roomId = obj._id;	
+             }
+  });
   console.log("getRoomId memberId : " + memberId + ", roomID : " + roomId);
   return roomId;
 }
