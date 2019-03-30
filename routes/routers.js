@@ -147,12 +147,22 @@
     await requestModel.getRequestMemberInfo(req, res);
   });
 
+  // count
+  /*
+  app.get('/requestMemberInfo/getRequestApplyCount/:roomId', async function(req, res) {
+    console.log('get /requestMemeberInfo');
+    var requestModel = require('../database/schema/requestRoom');
+    //console.log("my apply Room myId : " + req.params.memberId);
+    await requestModel.getRequestMemberInfo(req, res);
+  });*/
+
   app.get('/code', async function(req, res) {
     console.log('get codeList');
     var codeModel = require('../database/schema/code');
     //console.log("my apply Rom myId : " + req.params.memberId);
     await codeModel.getCodeList(req, res);
   });
+
 }
 
 
