@@ -47,65 +47,9 @@ requestRoomSchema.statics.insertRequest = async function(requestMemberId, roomOb
             });
 }
 
-requestRoomSchema.statics.getRequest = async function(roomObjId, res){
-    await this.find (
-            {"roomId": roomObjId
-            }).populate('memberId').exec((err, obj) => {
-                //}).exec((err, obj) => {
-    if (err) {
-        console.log('getRequest err : ' + err);
-        res.json({
-            statusCode: '500',
-            statusMsg: err,
-            total: '0'
-          });
-        } else if (!obj) {
-          console.log('insertRequest error' + err);
-          res.json ({
-            statusCode: '500',
-            statusMsg: err,
-            total: '0'
-          });
-        } else {
-          res.json ({
-            statusCode: '200',
-            statusMsg: 'success',
-            total: '0'
-          });
-        }
-      });
-/*
-  requestObj = new this({
-    memberId:requestMemberId,
-		roomId:roomObjId,
-		requestStatus:status
-  });
-
-  var result = await requestObj.save(function (err, savedObj) {
-    if (err) {
-      console.log('insertRequest error' + err);
-      res.json ({
-        statusCode: '500',
-        statusMsg: err,
-        total: '0'
-      });
-    } else if (!savedObj) {
-      console.log('insertRequest error' + err);
-      res.json ({
-        statusCode: '500',
-        statusMsg: err,
-        total: '0'
-      });
-    } else {
-      res.json ({
-        statusCode: '200',
-        statusMsg: 'success',
-        total: '1'
-      });
-      console.log('Save obj : ' + savedObj);
-    }
-  })
-*/
+requestRoomSchema.statics.getCountRequest = async function(roomObjId, res){
+    return await this.find ({'roomId': roomObjId
+        ,'requestStatus': '10' }).countDocuments();
 }
 
 requestRoomSchema.statics.getRequest = async function(roomObjId, res){
@@ -144,7 +88,7 @@ requestRoomSchema.statics.updateRequest = async function(req, res) {
       {memberId : req.body.requestMemberId,
         roomId : req.body.roomId,
       },
-      {$set : 
+      {$set :
         {
           requestStatus : req.body.requestStatus
         }
