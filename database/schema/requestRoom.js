@@ -158,7 +158,7 @@ requestRoomSchema.statics.deleteRequestAboutRoom = async function(roomId) {
             } else if (!obj) {
                 console.log('deleteRequestAboutRoom error' + err);
             } else {
-                console.log('deleteRequestAboutRoom Success: ' + obj);
+                console.log('doleteRequestAboutRoom Success: ' + obj);
             }
     });
 }
@@ -198,34 +198,35 @@ requestRoomSchema.statics.getRequestRoomInfo = async function(req, res) {
 requestRoomSchema.statics.getRequestMemberInfo = async function(req, res) {
   console.log("getRequestMemberInfo : " + req.params.memberId);
     // find roomId from memberId
-    var roomId = await roomModel.getRoomId(req.params.memberId);
-    var result = await this.find (
-            {"roomId": roomId
-            }).populate('memberId').exec((err, data) => {
-                if (err) {
-                    console.log('getRequestMemberInfo err : ' + err);
-                    res.json({
-                        statusCode: '500',
-                        statusMsg: err,
-                        total: '0'
-                    });
-                } else if (!data) {
-                    console.log('getRequestMemberInfo not found');
-                    res.json({
-                        statusCode: '200',
-                        statusMsg: 'room not found',
-                        total: '0'
-                    });
-                } else {
-                    res.json({
-                        statusCode: '200',
-                        statusMsg: 'success',
-                        total: data.length,
-                        resultItems:data
-                    });
-                    console.log('data : ' + data);
-                }
-            });
+  var roomId = await roomModel.getRoomId(req.params.memberId);
+  // dlgmlals3 안기다림 이거해결해.. await and await
+  var result = await this.find (
+        {"roomId": roomId
+        }).populate('memberId').exec((err, data) => {
+            if (err) {
+                console.log('getRequestMemberInfo err : ' + err);
+                res.json({
+                    statusCode: '500',
+                    statusMsg: err,
+                    total: '0'
+                });
+            } else if (!data) {
+                console.log('getRequestMemberInfo not found');
+                res.json({
+                    statusCode: '200',
+                    statusMsg: 'room not found',
+                    total: '0'
+                });
+            } else {
+                res.json({
+                    statusCode: '200',
+                    statusMsg: 'success',
+                    total: data.length,
+                    resultItems:data
+                });
+                console.log('data : ' + data);
+            }
+        });
 }
 
 module.exports = mongoose.model('requestRoom',requestRoomSchema);

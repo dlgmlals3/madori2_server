@@ -234,20 +234,26 @@ roomSchema.statics.getRoomList = async function(req, res) {
 }
 
 /* get RoomId */
-roomSchema.statics.getRoomId = async function(memberId) {
-  var roomId;
-  await this.findOne ({"memberId": memberId},
+//roomSchema.statics.getRoomId = async function(memberId) {
+exports.getRoomId = async function(memberId) {
+  try {
+    console.log('getRoomId');
+    var room = await this.findOne ({"memberId": memberId},
         function(err, obj) {
              if (err) {
-                 console.log('getRoomElement err : ' + err);
+                console.log('getRoomElement err : ' + err);
+                return "";
              } else if (!obj) {
-                 console.log('room not found');
+                console.log('room not found');
+                return "";
              } else {
-               roomId = obj._id;	
+                console.log("roomFound" + "roomId " + room._id);
+                return room._id;
              }
-  });
-  console.log("getRoomId memberId : " + memberId + ", roomID : " + roomId);
-  return roomId;
+        });
+  } catch (err) {
+    return "";
+  }
 }
 
 /* TODO : find all data */
