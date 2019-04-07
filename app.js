@@ -116,12 +116,12 @@ io.on('connection', function(socket){
 			socket.broadcast.to(data.room).emit('SYSTEM', {
 				message : data.name + ' joined here to GNJ'
 			});
-
 		}
 	});	// socket.on('CONNECT')
 
 	socket.on('SEND_MESSAGE', function(data) {
 			console.log('data room : ' + data.room);
 			socket.broadcast.to(data.room).emit('BROADCAST_MESSAGE', data);
+            //db에 저장
 	});// SEND_MESSAGE
 });	// io.on('connection')
