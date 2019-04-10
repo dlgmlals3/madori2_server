@@ -142,19 +142,13 @@
 
   app.get('/requestMemberInfo/:memberId', async function(req, res) {
     console.log('get /requestMemeberInfo');
+    var RoomModel = require('../database/schema/room');
     var requestModel = require('../database/schema/requestRoom');
-    //console.log("my apply Room myId : " + req.params.memberId);
-    await requestModel.getRequestMemberInfo(req, res);
+    var roomId = await RoomModel.getRoomId(req.params.memberId);
+    console.log("memberId: " + 
+        req.params.memberId + " roomId : " + roomId);
+    await requestModel.getRequestMemberInfo(roomId, res);
   });
-
-  // count
-  /*
-  app.get('/requestMemberInfo/getRequestApplyCount/:roomId', async function(req, res) {
-    console.log('get /requestMemeberInfo');
-    var requestModel = require('../database/schema/requestRoom');
-    //console.log("my apply Room myId : " + req.params.memberId);
-    await requestModel.getRequestMemberInfo(req, res);
-  });*/
 
   app.get('/code', async function(req, res) {
     console.log('get codeList');

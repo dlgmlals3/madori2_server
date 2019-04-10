@@ -195,11 +195,8 @@ requestRoomSchema.statics.getRequestRoomInfo = async function(req, res) {
       });
 }
 
-requestRoomSchema.statics.getRequestMemberInfo = async function(req, res) {
-  console.log("getRequestMemberInfo : " + req.params.memberId);
-    // find roomId from memberId
-  var roomId = await roomModel.getRoomId(req.params.memberId);
-  // dlgmlals3 안기다림 이거해결해.. await and await
+requestRoomSchema.statics.getRequestMemberInfo = async function(roomId, res) {
+  console.log("getRequestMemberInfo : " + roomId);
   var result = await this.find (
         {"roomId": roomId
         }).populate('memberId').exec((err, data) => {
