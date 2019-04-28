@@ -97,6 +97,29 @@ var io = require('socket.io')(server, {
 });
 
 io.on('connection', function(socket){
+
+	socket.emit('CONNECT', {
+		type : 'connected'
+	});	// socket.emit('CONNECT')
+	
+	socket.on('JOIN_ROOM', function(data){
+		socket.join(data.roomId);
+		console.log('CREATE_ROOM socket... data.roomId : ' + data.roomId);
+		socket.broadcast.to(data.roomId).emit('SEND_MSG', {
+			msg : data.nickName + ' joined this room'
+		});
+
+	});
+
+	socket.on('LEAVE_ROOM', function(data){
+		socket.leave(data.roomId);
+		console.log('LEAVE_ROOM... roomId : ' + data.roomId);
+		
+		socket.broadcast.to(data.roomId).emit('SEND_MSG', {
+			msg : data.nickName + ' has quit this room.'
+		});
+	});
+
 	console.log('connection socket');
 	socket.emit('CONNECT', {
 		type : 'connected'
@@ -105,23 +128,30 @@ io.on('connection', function(socket){
 	socket.on('CONNECT', function(data) {
 		if(data.type === 'join') {
 			console.log('data.type == join');
-			console.log('data.room : ' + data.room);
+			console.log('data.roomId : ' + data.roomId);
 
-			socket.join(data.room);
+			socket.join(data.roomId);
 
 			socket.emit('SYSTEM', {
 				message : 'welcome to the chatting room!'
 			});
 
-			socket.broadcast.to(data.room).emit('SYSTEM', {
+			socket.broadcast.to(data.roomId).emit('SYSTEM', {
 				message : data.name + ' joined here to GNJ'
 			});
 		}
 	});	// socket.on('CONNECT')
 
 	socket.on('SEND_MESSAGE', function(data) {
-			console.log('data room : ' + data.room);
-			socket.broadcast.to(data.room).emit('BROADCAST_MESSAGE', data);
+			console.log('data room : ' + data.roomId);
+			socket.broadcast.to(data.roomId).emit('BROADCAST_MESSAGE', data);
             //db에 저장
 	});// SEND_MESSAGE
+	
+	/*socket.on('disconnect', function(data){
+		socket.broadcast.to.(data.roomId).emit('DISCONNECT', {
+			msg: data.memberId + ' quit this room...'
+		}
+	});*/
+
 });	// io.on('connection')
