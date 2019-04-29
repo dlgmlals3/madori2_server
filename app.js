@@ -104,7 +104,7 @@ io.on('connection', function(socket){
 	
 	socket.on('JOIN_ROOM', function(data){
 		socket.join(data.roomId);
-		console.log('CREATE_ROOM socket... data.roomId : ' + data.roomId);
+		console.log('JOIN_ROOM socket... data.roomId : ' + data.roomId);
 		socket.broadcast.to(data.roomId).emit('SEND_MSG', {
 			msg : data.nickName + ' joined this room'
 		});
@@ -145,7 +145,8 @@ io.on('connection', function(socket){
 	socket.on('SEND_MESSAGE', function(data) {
 			console.log('data room : ' + data.roomId);
 			socket.broadcast.to(data.roomId).emit('BROADCAST_MESSAGE', data);
-            //db에 저장
+            ear
+						/db에 저장
 	});// SEND_MESSAGE
 	
 	/*socket.on('disconnect', function(data){
