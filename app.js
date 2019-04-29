@@ -145,8 +145,6 @@ io.on('connection', function(socket){
 	socket.on('SEND_MESSAGE', function(data) {
 			console.log('data room : ' + data.roomId);
 			socket.broadcast.to(data.roomId).emit('BROADCAST_MESSAGE', data);
-            ear
-						/db에 저장
 	});// SEND_MESSAGE
 	
 	/*socket.on('disconnect', function(data){
