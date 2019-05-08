@@ -98,15 +98,18 @@ var io = require('socket.io')(server, {
 
 io.on('connection', function(socket){
 
-	socket.emit('CONNECT', {
+	/*socket.emit('CONNECT', {
 		type : 'connected'
 	});	// socket.emit('CONNECT')
+	*/
 	
 	socket.on('JOIN_ROOM', function(data){
 		socket.join(data.roomId);
 		console.log('JOIN_ROOM socket... data.roomId : ' + data.roomId);
-		socket.broadcast.to(data.roomId).emit('SEND_MSG', {
-			msg : data.nickName + ' joined this room'
+		socket.broadcast.to(data.roomId).emit('BAORDCAST_MESSAGE', {
+			msg : data.nickName + ' joined this room',
+			roomId : data.roomId,
+			nickName: data.nickName
 		});
 
 	});
@@ -120,30 +123,7 @@ io.on('connection', function(socket){
 		});
 	});
 
-	console.log('connection socket');
-	socket.emit('CONNECT', {
-		type : 'connected'
-	});	// socket.emit('CONNECT')
-
-	socket.on('CONNECT', function(data) {
-		if(data.type === 'join') {
-			console.log('data.type == join');
-			console.log('data.roomId : ' + data.roomId);
-
-			socket.join(data.roomId);
-
-			socket.emit('SYSTEM', {
-				message : 'welcome to the chatting room!'
-			});
-
-			socket.broadcast.to(data.roomId).emit('SYSTEM', {
-				message : data.name + ' joined here to GNJ'
-			});
-		}
-	});	// socket.on('CONNECT')
-
 	socket.on('SEND_MESSAGE', function(data) {
-			console.log('data room : ' + data.roomId);
 			socket.broadcast.to(data.roomId).emit('BROADCAST_MESSAGE', data);
 	});// SEND_MESSAGE
 	
