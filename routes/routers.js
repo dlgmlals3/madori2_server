@@ -1,7 +1,8 @@
 ﻿module.exports = function(app) {
+	const request = require('request');
   /* Create member */
   app.post('/member', function(req, res) {
-    console.log('POST /member');
+    console.log('POST /member memberId : ' + req.body.memberId);
     var member = require('../database/schema/member');
     member.insertMember(req, res);
   });
@@ -30,7 +31,7 @@
 
   /* Create Room */
   app.post('/room', function(req, res) {
-    console.log('POST /room make room');
+    console.log('POST /room make room memberId : ' + req.body.memberId);
     var RoomModel = require('../database/schema/room');
     RoomModel.insertRoom(req, res);
   });
@@ -157,6 +158,48 @@
     await codeModel.getCodeList(req, res);
   });
 
+  app.get('/logout/:accessToken', async function(req, res) {
+    //console.log('logout, req : ' + JSON.stringify(req));
+    console.log('logout, accessToken : ' + req.params.accessToken);
+			var LOGOUT_REQUEST = 'https://kapi.kakao.com/v1/user/logout';
+			var accessToken = req.params.accessToken;
+			var json;
+			var logoutRequestRes = res;
+
+			var baseRequest = request.defaults({
+				headers : {
+					'Authorization' : 'Bearer ' + accessToken
+				}
+			});
+			baseRequest(LOGOUT_REQUEST, function (error, res, body) {
+				var jsonObj = JSON.parse(body);
+				if(jsonObj.id != undefined){
+					jsonObj['result'] = 'success';
+				} else {
+					jsonObj['result'] = 'fail';
+				}
+				logoutRequestRes.json(jsonObj);
+			});
+  });
+
+  app.get('/kakao/member/:accessToken', async function(req, res) {
+    //console.log('logout, req : ' + JSON.stringify(req));
+    console.log('kakao/member, accessToken : ' + req.params.accessToken);
+			var GET_MEMBER_INFO_REQUEST = 'https://kapi.kakao.com/v2/user/me';
+			var accessToken = req.params.accessToken;
+			var json;
+			var logoutRequestRes = res;
+
+			var baseRequest = request.defaults({
+				headers : {
+					'Authorization' : 'Bearer ' + accessToken
+				}
+			});
+			baseRequest(GET_MEMBER_INFO_REQUEST, function (error, res, body) {
+				var jsonObj = JSON.parse(body);
+				logoutRequestRes.json(jsonObj);
+			});
+  });
 }
 
 
